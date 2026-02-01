@@ -35,6 +35,39 @@
                 margin-top: env(safe-area-inset-top);
             }
         }
+        /* ให้ส่วนหัวแสดงบนมือถือ */
+        .form-container h1,
+        .form-container h2 {
+            display: block !important;
+        }
+        
+        /* ปรับขนาดตัวอักษรบนมือถือ */
+        @media (max-width: 768px) {
+            .form-container h1 {
+                font-size: 1.5rem !important; /* ลดจาก 3xl (1.875rem) */
+                margin-bottom: 0.5rem !important;
+            }
+            .form-container h2 {
+                font-size: 1.25rem !important; /* ลดจาก xl (1.25rem) */
+            }
+            .text-center.text-sm.text-gray-600 {
+                font-size: 0.875rem !important;
+                margin-bottom: 1rem !important;
+            }
+        }
+        
+        /* ป้องกันการซ่อนบนมือถือ */
+        @media (max-width: 640px) {
+            .form-container {
+                padding: 1rem !important;
+            }
+            .form-container h1 {
+                font-size: 1.25rem !important;
+            }
+            .form-container h2 {
+                font-size: 1rem !important;
+            }
+        }
         /* Custom CSS for styling and responsiveness */
         body {
             font-family: 'Kanit', sans-serif;
@@ -2386,4 +2419,5 @@
         });
     </script>
 </body>
+
 </html>
