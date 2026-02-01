@@ -1,6 +1,6 @@
 {
   "name": "ระบบข้อมูลผู้ใช้งาน lbot",
-  "short_name": "lbot",
+  "short_name": "Ulbot",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -13,4 +13,5 @@
       "type": "image/x-icon"
     }
   ]
+
 }
