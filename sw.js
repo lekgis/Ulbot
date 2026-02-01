@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lbot-app-v1';
+const CACHE_NAME = 'Ulbot-app-v1';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -19,4 +19,5 @@ self.addEventListener('fetch', event => {
     caches.match(event.request)
       .then(response => response || fetch(event.request))
   );
+
 });
