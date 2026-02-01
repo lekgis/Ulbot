@@ -1,15 +1,14 @@
 {
   "name": "ระบบข้อมูลผู้ใช้งาน lbot",
-  "short_name": "Ulbot",
-  "description": "ระบบจัดการข้อมูลผู้ใช้งาน",
-  "start_url": "/Ulbot-app/",
+  "short_name": "lbot",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/Ulbot-app/static/icons/lb.ico",
+      "src": "static/icons/lb.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     }
