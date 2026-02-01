@@ -1,5 +1,5 @@
 {
-  "name": "ระบบข้อมูลผู้ใช้งาน lbot",
+  "name": "Ulbot",
   "short_name": "Ulbot",
   "start_url": ".",
   "display": "standalone",
@@ -15,3 +15,4 @@
   ]
 
 }
+
