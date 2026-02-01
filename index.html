@@ -146,16 +146,16 @@
     </style>
 </head>
 <body class="min-h-screen">
-    <div class="form-container w-full max-w-3xl p-6 sm:p-8 md:p-10">
+    <div class="form-container w-full max-w-3xl p-6 sm:p-4 md:p-6">
         <h1 class="text-3xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600">ระบบข้อมูลผู้ใช้งาน lbot</h1>
         <div class="text-center text-sm text-gray-600 mb-6">อ.เล็ก (lekgis)</div>
 
-        <form id="userDataForm" class="space-y-6">
+        <form id="userDataForm" class="space-y-3 sm:space-y-4"">
             <input type="hidden" id="hiddenRowIdForUpdate" name="hiddenRowIdForUpdate">
 
-            <div class="border-b pb-4 mb-4 border-pink-300">
+            <div class="border-b pb-2 mb-3 border-pink-300">
                 <h2 class="text-xl font-semibold mb-3 text-pink-600">ค้นหาและแก้ไขข้อมูลหน่วยงาน</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end">
                     <div class="md:col-span-2">
                         <label for="searchOrgName" class="block text-sm font-medium text-gray-700">ค้นหาชื่อหน่วยงานเพื่อแก้ไข:</label>
                         <input type="text" id="searchOrgName" class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50" placeholder="พิมพ์ชื่อหน่วยงานที่ต้องการค้นหา...">
@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
                 <div>
                     <label for="ชื่อผู้ใช้" class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้:</label>
                     <input type="text" id="ชื่อผู้ใช้" name="ชื่อผู้ใช้" required class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50">
@@ -2387,3 +2387,4 @@
     </script>
 </body>
 </html>
+
