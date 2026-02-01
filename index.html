@@ -1,0 +1,2364 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/Ulbot-app/static/icons/lb.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/Ulbot-app/static/icons/lb.ico" type="image/x-icon">
+    
+    <!-- Apple Touch Icon (สำหรับ iOS) -->
+    <link rel="apple-touch-icon" href="/Ulbot-app/static/icons/lb.ico">
+    
+    <!-- Theme Color (สำหรับแถบแอดเดสบนมือถือ) -->
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Manifest (สำหรับ PWA) -->
+    <link rel="manifest" href="/Ulbot-app/manifest.json">
+    
+    <title>ระบบข้อมูลผู้ใช้งาน lbot</title>
+    
+    <!-- CSS และอื่นๆ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* เพิ่มส่วนนี้เพื่อป้องกันแถบแอดเดสบังเนื้อหาบนมือถือ */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            .form-container {
+                margin-top: env(safe-area-inset-top);
+            }
+        }
+        /* Custom CSS for styling and responsiveness */
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-image: linear-gradient(to br, #93c5fd, #f9a8d4); /* Blue to Pink gradient */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem; /* Add some padding around the form */
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+        }
+        .input-field {
+            border-color: #60a5fa; /* Blue border */
+            border-width: 1px; /* Ensure border is visible */
+        }
+        .input-field:focus {
+            outline: none; /* Remove default outline */
+            border-color: #ec4899; /* Pink border on focus */
+            box-shadow: 0 0 0 3px rgba(251, 207, 232, 0.5); /* Pink ring on focus (fbcfe8 with opacity) */
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* Blue button */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #ec4899; /* Pink button */
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #d946ef;
+        }
+        .searchable-dropdown-options {
+            border: 1px solid #cbd5e1;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+        }
+        .searchable-dropdown-options div {
+            padding: 0.5rem 0.75rem; /* p-2 */
+            cursor: pointer;
+        }
+        .searchable-dropdown-options div:hover {
+            background-color: #fbcfe8; /* Light pink hover */
+        }
+        /* Custom scrollbar for dropdowns */
+        .searchable-dropdown-options::-webkit-scrollbar {
+            width: 8px;
+        }
+        .searchable-dropdown-options::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .searchable-dropdown-options::-webkit-scrollbar-thumb {
+            background: #f9a8d4; /* Pink scrollbar */
+            border-radius: 10px;
+        }
+        .searchable-dropdown-options::-webkit-scrollbar-thumb:hover {
+            background: #ec4899;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000; /* Higher z-index for modal */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            display: flex; /* Use flexbox for centering */
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%; /* Responsive width */
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative; /* For close button positioning */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute; /* Position close button */
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="form-container w-full max-w-3xl p-6 sm:p-8 md:p-10">
+        <h1 class="text-3xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600">ระบบข้อมูลผู้ใช้งาน lbot</h1>
+        <div class="text-center text-sm text-gray-600 mb-6">อ.เล็ก (lekgis)</div>
+
+        <form id="userDataForm" class="space-y-6">
+            <input type="hidden" id="hiddenRowIdForUpdate" name="hiddenRowIdForUpdate">
+
+            <div class="border-b pb-4 mb-4 border-pink-300">
+                <h2 class="text-xl font-semibold mb-3 text-pink-600">ค้นหาและแก้ไขข้อมูลหน่วยงาน</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div class="md:col-span-2">
+                        <label for="searchOrgName" class="block text-sm font-medium text-gray-700">ค้นหาชื่อหน่วยงานเพื่อแก้ไข:</label>
+                        <input type="text" id="searchOrgName" class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50" placeholder="พิมพ์ชื่อหน่วยงานที่ต้องการค้นหา...">
+                        <div id="searchResultsContainer" class="absolute z-10 w-full mt-1 rounded-md shadow-lg searchable-dropdown-options hidden"></div>
+                    </div>
+                    <button type="button" id="searchOrgButton" class="w-full md:w-auto btn-secondary py-3 px-4 rounded-md shadow-md hover:shadow-lg transition duration-150">ค้นหาหน่วยงาน</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <label for="ชื่อผู้ใช้" class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้:</label>
+                    <input type="text" id="ชื่อผู้ใช้" name="ชื่อผู้ใช้" required class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50">
+                </div>
+                <div>
+                    <label for="รหัสผ่าน" class="block text-sm font-medium text-gray-700">รหัสผ่าน:</label>
+                    <input type="text" id="รหัสผ่าน" name="รหัสผ่าน" required class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50">
+                    </div>
+                <div class="md:col-span-2">
+                    <label for="ชื่อหน่วยงาน" class="block text-sm font-medium text-gray-700">ชื่อหน่วยงาน:</label>
+                    <input type="text" id="ชื่อหน่วยงาน" name="ชื่อหน่วยงาน" required class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+                <div>
+                    <label for="inputChangwat" class="block text-sm font-medium text-gray-700">จังหวัด:</label>
+                    <div class="relative">
+                        <input type="text" id="inputChangwat"
+                               placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด"
+                               class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50"
+                               aria-haspopup="listbox" aria-expanded="false" aria-controls="optionsChangwat">
+                        <div id="optionsChangwat" class="absolute z-20 w-full mt-1 rounded-md shadow-lg searchable-dropdown-options hidden" role="listbox"></div>
+                        <input type="hidden" id="จังหวัด" name="จังหวัด">
+                    </div>
+                </div>
+                <div>
+                    <label for="inputAmphoe" class="block text-sm font-medium text-gray-700">อำเภอ/เขต:</label>
+                    <div class="relative">
+                        <input type="text" id="inputAmphoe"
+                               placeholder="เลือกหรือพิมพ์ค้นหาอำเภอ"
+                               class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50" disabled
+                               aria-haspopup="listbox" aria-expanded="false" aria-controls="optionsAmphoe">
+                        <div id="optionsAmphoe" class="absolute z-20 w-full mt-1 rounded-md shadow-lg searchable-dropdown-options hidden" role="listbox"></div>
+                        <input type="hidden" id="อำเภอ" name="อำเภอ">
+                    </div>
+                </div>
+                <div>
+                    <label for="inputTambon" class="block text-sm font-medium text-gray-700">ตำบล/แขวง:</label>
+                    <div class="relative">
+                        <input type="text" id="inputTambon"
+                               placeholder="เลือกหรือพิมพ์ค้นหาตำบล"
+                               class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50" disabled
+                               aria-haspopup="listbox" aria-expanded="false" aria-controls="optionsTambon">
+                        <div id="optionsTambon" class="absolute z-20 w-full mt-1 rounded-md shadow-lg searchable-dropdown-options hidden" role="listbox"></div>
+                        <input type="hidden" id="ตำบล" name="ตำบล">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <label for="เบอร์โทร" class="block text-sm font-medium text-gray-700">เบอร์โทร:</label>
+                    <input type="tel" id="เบอร์โทร" name="เบอร์โทร" class="mt-1 block w-full p-3 border rounded-md shadow-sm input-field focus:ring focus:ring-opacity-50">
+                </div>
+                <div>
+                    <label for="วันที่บันทึก" class="block text-sm font-medium text-gray-700">วันที่บันทึก (พ.ศ.):</label>
+                    <div class="flex items-center mt-1">
+                        <input type="date" id="วันที่บันทึก" name="วันที่บันทึก" class="flex-grow p-3 border rounded-l-md shadow-sm bg-gray-100 input-field">
+                        <span id="displayRegistrationYearBE" class="bg-gray-200 p-3 rounded-r-md text-gray-700 text-sm font-medium"></span>
+                    </div>
+                </div>
+                <div>
+                    <label for="วันหมดอายุ" class="block text-sm font-medium text-gray-700">วันหมดอายุ (พ.ศ.):</label>
+                    <div class="flex items-center mt-1">
+                        <input type="date" id="วันหมดอายุ" name="วันหมดอายุ" required class="flex-grow p-3 border rounded-l-md shadow-sm input-field focus:ring focus:ring-opacity-50">
+                        <span id="displayExpiryYearBE" class="bg-gray-200 p-3 rounded-r-md text-gray-700 text-sm font-medium"></span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">สถานะ:</label>
+                    <input type="text" id="สถานะ" name="สถานะ" readonly class="mt-1 block w-full p-3 border rounded-md shadow-sm bg-gray-100 input-field">
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6">
+                <button type="button" id="clearFormButton" class="w-full sm:w-auto btn-secondary py-3 px-6 rounded-md shadow-md hover:shadow-lg transition duration-150">ล้างข้อมูล</button>
+                <button type="submit" class="w-full sm:w-auto btn-primary py-3 px-6 rounded-md shadow-md hover:shadow-lg transition duration-150 flex items-center justify-center">
+                    <svg id="loadingSpinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span id="submitButtonText">บันทึกข้อมูล</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="modalCloseButton">&times;</span>
+            <p id="modalMessageText" class="text-lg"></p>
+            <button id="modalOkButton" class="mt-4 btn-primary py-2 px-4 rounded-md">ตกลง</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Data for dropdowns (ตัวอย่างข้อมูล สามารถปรับปรุงเพิ่มเติมได้) ---
+        const thaiAdminData = {
+            "กรุงเทพมหานคร": {
+                "เขตพระนคร": [
+                    "พระบรมมหาราชวัง", 
+                    "วัดราชบพิธ", 
+                    "สำราญราษฎร์"
+                ],
+                "เขตดุสิต": [
+                    "ดุสิต", 
+                    "วชิรพยาบาล", 
+                    "สวนจิตรลดา", 
+                    "สี่แยกมหานาค"
+                ],
+                "เขตบางรัก": [
+                    "บางรัก", 
+                    "สีลม", 
+                    "สุริยวงศ์", 
+                    "สี่พระยา"
+                ],
+                "เขตปทุมวัน": [
+                    "ลุมพินี", 
+                    "ปทุมวัน"
+                ],
+                "เขตป้อมปราบศัตรูพ่าย": [
+                    "คลองมหานาค", 
+                    "บ้านบาตร", 
+                    "ชนะสงคราม"
+                ],
+                "เขตสัมพันธวงศ์": [
+                    "จักรวรรดิ", 
+                    "ตลาดน้อย", 
+                    "เสาชิงช้า"
+                ],
+                "เขตบางกอกน้อย": [
+                    "บางกอกน้อย", 
+                    "บางขุนน้อย", 
+                    "บางยี่ขัน"
+                ],
+                "เขตบางกอกใหญ่": [
+                    "บางกอกใหญ่", 
+                    "วัดอรุณ", 
+                    "บางขุนศรี"
+                ],
+                "เขตบางพลัด": [
+                    "บางพลัด", 
+                    "บางอ้อ", 
+                    "บางไผ่"
+                ],
+                "เขตภาษีเจริญ": [
+                    "คลองต้นไทร", 
+                    "คลองฉัตรมงคล", 
+                    "บางจาก", 
+                    "บางแค", 
+                    "บางไผ่"
+                ],
+                "เขตหนองแขม": [
+                    "หนองแขม", 
+                    "หนองปลา", 
+                    "ตลิ่งชัน", 
+                    "บางระมาด"
+                ],
+                "เขตบางแค": [
+                    "บางแค", 
+                    "บางแคเหนือ", 
+                    "บางหม้อ"
+                ],
+                "เขตหลักสี่": [
+                    "หลักสี่", 
+                    "บางเขน", 
+                    "ลาดยาว", 
+                    "อนุสาวรีย์"
+                ],
+                "เขตจตุจักร": [
+                    "จตุจักร", 
+                    "ลาดยาว", 
+                    "คลองจั่น"
+                ],
+                "เขตดอนเมือง": [
+                    "ดอนเมือง", 
+                    "สีกัน"
+                ],
+                "เขตบางเขน": [
+                    "บางเขน", 
+                    "ลาดยาว"
+                ],
+                "เขตสายไหม": [
+                    "สายไหม", 
+                    "ออเงิน", 
+                    "คลองถนน"
+                ],
+                "เขตคันนายาว": [
+                    "คันนายาว"
+                ],
+                "เขตสะพานสูง": [
+                    "สะพานสูง"
+                ],
+                "เขตวังทองหลาง": [
+                    "วังทองหลาง", 
+                    "คลองจั่น"
+                ],
+                "เขตคลองเตย": [
+                    "คลองเตยเหนือ", 
+                    "คลองเตย", 
+                    "คลองแสนแสบ"
+                ],
+                "เขตคลองสาน": [
+                    "คลองสาน", 
+                    "บางลำภู", 
+                    "บางโพงพาง"
+                ],
+                "เขตบางคอแหลม": [
+                    "บางคอแหลม", 
+                    "วัดพระยาไกร", 
+                    "บางโคล่"
+                ],
+                "เขตบางขุนเทียน": [
+                    "บางขุนเทียน", 
+                    "บางบอน", 
+                    "ท่าข้าม"
+                ],
+                "เขตสาทร": [
+                    "สีลม", 
+                    "สาทรเหนือ", 
+                    "สาทรใต้"
+                ],
+                "เขตยานนาวา": [
+                    "ยานนาวา", 
+                    "บางมด"
+                ],
+                "เขตธนบุรี": [
+                    "บางยี่เรือ", 
+                    "บางขุนพรม", 
+                    "คลองต้นไทร"
+                ],
+                "เขตราษฎร์บูรณะ": [
+                    "ราษฎร์บูรณะ", 
+                    "บางปะกอก"
+                ],
+                "เขตดินแดง": [
+                    "ดินแดง", 
+                    "สามเสนนอก", 
+                    "บางกะปิ"
+                ],
+                "เขตห้วยขวาง": [
+                    "ห้วยขวาง", 
+                    "บางกะปิ", 
+                    "สามเสนนอก"
+                ],
+                "เขตวัฒนา": [
+                    "คลองเตยเหนือ", 
+                    "คลองตัน", 
+                    "พระโขนง"
+                ],
+                "เขตบางนา": [
+                    "บางนา", 
+                    "คลองตันเหนือ"
+                ],
+                "เขตประเวศ": [
+                    "หนองบอน", 
+                    "ประเวศ", 
+                    "ดอกไม้"
+                ],
+                "เขตพระโขนง": [
+                    "พระโขนง", 
+                    "บางจาก", 
+                    "คลองตันเหนือ"
+                ]
+            },
+            "กระบี่": {
+                "เมืองกระบี่": [
+                    "กระบี่ใหญ่", "ปากน้ำ", "เหนือคลอง", "ไสไทย", "อ่าวลึกใต้", "อ่าวลึกเหนือ"
+                ],
+                "อ่าวลึก": [
+                    "อ่าวลึกใต้", "อ่าวลึกเหนือ"
+                ],
+                "เขาพนม": [
+                    "เขาพนม", "โนนหนา"
+                ],
+                "เกาะลันตา": [
+                    "ศาลาด่าน", "เวียง"
+                ],
+                "ลำทับ": [
+                    "ลำทับ", "ทุ่งปรัง", "วังแก้ว"
+                ],
+                "เหนือคลอง": [
+                    "เหนือคลอง", "คลองประสงค์", "คลองขนาก"
+                ],
+                "อุ้มผาง": [
+                    "อุ้มผาง", "แม่ละนา"
+                ]
+            },
+            "กาญจนบุรี": {
+                "เมืองกาญจนบุรี": [
+                    "ท่ามะกา", "ท่าไม้", "วังขนาย", "บ้านเก่า", "ปากแพรก", "แก่งเสี้ยน", "หนองปรือ"
+                ],
+                "ทองผาภูมิ": [
+                    "ลึก", "สมเด็จเจริญ", "หินดาด", "ซับตะเคียน", "ห้วยกระเจา"
+                ],
+                "ไทรโยค": [
+                    "ไทรโยค", "สามплавก", "ลุ่มสุ่ม"
+                ],
+                "สังขละบุรี": [
+                    "สังขละบุรี", "ลิ่นถิ่น", "สาละวัน"
+                ],
+                "ศรีสวัสดิ์": [
+                    "ศรีสวัสดิ์", "หลักเขต", "วังผา"
+                ],
+                "พนมทวน": [
+                    "พนมทวน", "ด่านแม่แรม", "หนองไผ่"
+                ],
+                "เลาขวัญ": [
+                    "เลาขวัญ", "หนองหญ้าแซลง"
+                ],
+                "ด่านมะขามเตี้ย": [
+                    "ด่านมะขามเตี้ย", "หนองพลับ"
+                ]
+            },
+            "กาฬสินธุ์": {
+                "เมืองกาฬสินธุ์": [
+                    "กาฬสินธุ์", "หนองกุงศรี", "หลุกจำปี", "โคกศรี", "โนนสะอาด", "คำหร่า"
+                ],
+                "นามน": [
+                    "นามน", "หนองโจด", "หนองแปง", "นาคู่", "โพนงาม"
+                ],
+                "เขาวง": [
+                    "เขาวง", "โนนสะอาด", "โนนแดง", "โนนศิลา"
+                ],
+                "กมลาไสย": [
+                    "กมลาไสย", "นาโก", "หนองกุง", "นาขมิ้น"
+                ],
+                "ยางตลาด": [
+                    "ยางตลาด", "หนองบัว", "หนองเม็ก"
+                ],
+                "ร่องคำ": [
+                    "ร่องคำ", "โพนก่อ"
+                ],
+                "สมเด็จ": [
+                    "สมเด็จ", "โนนสิม", "นาโกษา"
+                ],
+                "ห้วยผึ้ง": [
+                    "ห้วยผึ้ง", "โนนศิลา"
+                ]
+            },
+            "กำแพงเพชร": {
+                "เมืองกำแพงเพชร": [
+                    "กำแพงเพชร", "นครชุม", "ป่าพะยอม", "ลานกระบือ", "คลองแม่ลาย"
+                ],
+                "ขาณุวรลักษบุรี": [
+                    "ขาณุ", "วังแขม", "หนองลุมพุก", "แม่ลาด", "แม่เสา"
+                ],
+                "คลองลาน": [
+                    "คลองลาน", "คลองลานพัฒนา", "ท่าด้วง", "ทุ่งกระเซ็น"
+                ],
+                "โกสัมพีนคร": [
+                    "โกสัมพี", "บางคลาน", "บางกระบือ"
+                ],
+                "ทรายมูล": [
+                    "ทรายมูล", "หนองปลิง", "หนองพยอม"
+                ],
+                "บึงสามัคคี": [
+                    "บึงสามัคคี", "หนองย่างเสือ"
+                ],
+                "ปางศิลา": [
+                    "ปางศิลา", "วังชมภู"
+                ],
+                "ลานกระบือ": [
+                    "ลานกระบือ", "หนองหลวง", "วังไผ่"
+                ]
+            },
+            "ขอนแก่น": {
+                "เมืองขอนแก่น": [
+                    "ในเมือง", "ท่าพระ", "บ้านทุ่ม", "เวียงยอง", "ศิลา", "บ้านเป็ด"
+                ],
+                "บ้านไผ่": [
+                    "บ้านไผ่", "โคกสว่าง", "หนองโก", "โนนศิลา"
+                ],
+                "น้ำพอง": [
+                    "น้ำพอง", "หนองสองห้อง", "หนองเรือ", "บ้านหว้า"
+                ],
+                "กระนวน": [
+                    "กระนวน", "หนองกุง", "นาคำ", "หนองแสง"
+                ],
+                "เขาสวนโสน": [
+                    "เขาสวนโสน", "หนองไผ่"
+                ],
+                "ชนบท": [
+                    "ชนบท", "ดอนหัน", "โคกไม้ลาย"
+                ],
+                "ซำสูง": [
+                    "ซำสูง", "โนนสะอาด"
+                ]
+            },
+            "จันทบุรี": {
+                "เมืองจันทบุรี": [
+                    "จันทนิมิต", "วัดใหม่", "คลองใหญ่", "วังใหม่", "พลับพลา"
+                ],
+                "แหลมสิงห์": [
+                    "แหลมสิงห์", "คลองขุด", "บางกะจะ", "คลองใหญ่"
+                ],
+                "ขลุง": [
+                    "ขลุง", "บางกะจะ", "วังตะเคียน"
+                ],
+                "มะขาม": [
+                    "มะขาม", "บางสมบัติ", "ท่าใหม่"
+                ],
+                "แก่งหางแมว": [
+                    "แก่งหางแมว", "บางปะกง"
+                ],
+                "ขุนกระทิง": [
+                    "ขุนกระทิง", "ทุ่งเบญจา"
+                ],
+                "ท่าใหม่": [
+                    "ท่าใหม่", "ปากน้ำพลี"
+                ]
+            },
+            "ฉะเชิงเทรา": {
+                "เมืองฉะเชิงเทรา": [
+                    "หน้าเมือง", "ท่าโพธิ์", "บางขนาก", "บางพระ", "บางนา", "บางยาง"
+                ],
+                "บางคล้า": [
+                    "บางคล้า", "บางสมบัติ", "บางเล่า"
+                ],
+                "พนมสารคาม": [
+                    "พนมสารคาม", "เกาะขนุน", "หนองยาว", "หนองแหน"
+                ],
+                "ราชสาส์น": [
+                    "ราชสาส์น", "บางชัน"
+                ],
+                "แปลงยาว": [
+                    "แปลงยาว", "บางเกลือ"
+                ],
+                "คลองเขื่อน": [
+                    "คลองเขื่อน", "บางหลวง"
+                ],
+                "บ้านโพธิ์": [
+                    "บ้านโพธิ์", "บางสมัคร"
+                ]
+            },
+            "ชลบุรี": {
+                "เมืองชลบุรี": [
+                    "ศรีราชา", "บ้านสวน", "แสนภูดาษ", "หนองยายแสง", "หนองไม้แดง"
+                ],
+                "พัทยา": [
+                    "หนองปรือ", "หนองปลาไหล", "นาเกลือ"
+                ],
+                "บางละมุง": [
+                    "บางละมุง", "นาเกลือ", "ห้วยใหญ่"
+                ],
+                "สัตหีบ": [
+                    "นาจอมเทียน", "บางเสร่", "สัตหีบ"
+                ],
+                "พนัสนิคม": [
+                    "พนัสนิคม", "หน้าพระธาตุ", "ปรายา"
+                ],
+                "บ้านบึง": [
+                    "บ้านบึง", "หนองซ้ำซาก"
+                ],
+                "หนองใหญ่": [
+                    "หนองใหญ่", "คลองพลู"
+                ],
+                "เกาะสีชัง": [
+                    "เกาะสีชัง"
+                ]
+            },
+            "ชัยนาท": {
+                "เมืองชัยนาท": [
+                    "ชัยนาท", "สรรพยา", "เสือโฮก", "บ้านกล้วย", "หนองยายโต๊ะ"
+                ],
+                "มโนรมย์": [
+                    "มโนรมย์", "ห้วยง่าม", "วังหมัน"
+                ],
+                "วัดสิงห์": [
+                    "วัดสิงห์", "ท่าฉาง", "บางกระบือ"
+                ],
+                "สรรคบุรี": [
+                    "สรรคบุรี", "หัวเดียว", "หนองแซง"
+                ],
+                "สรรพยา": [
+                    "สรรพยา", "บางหลวง", "บางประสาท"
+                ],
+                "หันคา": [
+                    "หันคา", "สามง่าม", "หนองขุ่น"
+                ],
+                "เนินขาม": [
+                    "เนินขาม", "หนองมะโมง"
+                ]
+            }, 
+            "ชัยภูมิ": {
+                "เมืองชัยภูมิ": [
+                    "ในเมือง", "บ้านแท่น", "นาเสียว", "กุดตุ้ม", "รอบเมือง"
+                ],
+                "บ้านเขว้า": [
+                    "บ้านเขว้า", "หนองฉิม", "โนนสำราญ"
+                ],
+                "เกษตรสมบูรณ์": [
+                    "เกษตรสมบูรณ์", "โนนสำราญ", "โนนทอง", "บ้านยาง"
+                ],
+                "คอนสวรรค์": [
+                    "คอนสวรรค์", "บ้านหีบ", "ศรีเทพ"
+                ],
+                "บำเหน็จณรงค์": [
+                    "บ้านโพน", "บ้านเพชร", "เขาบายศรี"
+                ],
+                "หนองบัวแดง": [
+                    "หนองบัวแดง", "หนองไผ่", "โนนสะอาด"
+                ],
+                "เทพสถิต": [
+                    "เทพสถิต", "ช่อม่วง"
+                ]
+            },
+            "ตรัง": {
+                "เมืองตรัง": [
+                    "ทับเที่ยง", "บางรัก", "คลองเต็ง", "โคกหล่อ", "ควนปริง"
+                ],
+                "ห้วยยอด": [
+                    "ลำภูรา", "ทุ่งต้นเตย", "ทุ่งกระบือ", "ปากคม"
+                ],
+                "ปะเหลียน": [
+                    "ปะเหลียน", "หาดนางแก้ว", "ไม้ฝาด", "นาโต๊ะหมิง"
+                ],
+                "กันตัง": [
+                    "กันตัง", "เกาะลิบง", "บางเป้า"
+                ],
+                "สิเกา": [
+                    "สิเกา", "แหลมทราย"
+                ],
+                "รัษฎา": [
+                    "รัษฎา", "บางหมาก"
+                ],
+                "วังวิเศษ": [
+                    "วังวิเศษ", "ทุ่งยาว"
+                ]
+            },
+            "ตราด": {
+                "เมืองตราด": [
+                    "บางพระ", "ตะกั่วบุ", "บางค่า", "บางมะเร็ต", "คลองใหญ่"
+                ],
+                "เขาสมิง": [
+                    "เขาสมิง", "บางสะพาน", "สองสลึง", "วังกระแจะ"
+                ],
+                "คลองใหญ่": [
+                    "คลองใหญ่", "แหลมกลัด", "บางเบ้า"
+                ],
+                "บ่อไร่": [
+                    "บ่อไร่", "พลับพลา", "เวียง"
+                ],
+                "เกาะช้าง": [
+                    "เกาะช้าง", "เกาะหมาก", "เกาะกูด"
+                ],
+                "แหลมงอบ": [
+                    "แหลมงอบ", "หาดเล็ก"
+                ]
+            },
+            "ตาก": {
+                "เมืองตาก": [
+                    "ธานี", "วังประจบ", "แม่ท้อ", "หนองหลวง", "บ้านตาก"
+                ],
+                "แม่สอด": [
+                    "แม่สอด", "มหาวัน", "แม่ปะ", "ทุ่งกระเชาะ"
+                ],
+                "พบพระ": [
+                    "พบพระ", "ช่องแคบ", "วาเล่ย์", "แม่จะเรา"
+                ],
+                "ท่าสองยาง": [
+                    "ท่าสองยาง", "แม่ยะ", "แม่เงา"
+                ],
+                "แม่ระมาด": [
+                    "แม่ระมาด", "แม่คง", "แม่สอย"
+                ],
+                "อุ้มผาง": [
+                    "อุ้มผาง", "แม่ละนา"
+                ],
+                "บ้านตาก": [
+                    "บ้านตาก", "สามเงา"
+                ]
+            },
+            "นครนายก": {
+                "เมืองนครนายก": [
+                    "นครนายก", "สาริกา", "ดงละคร", "บ้านใหญ่", "ทับพริก"
+                ],
+                "บ้านนา": [
+                    "บ้านนา", "เกาะหวาย", "ท่าทราย", "บางอ้อ"
+                ],
+                "ปากพลี": [
+                    "ปากพลี", "นาหุ่ง", "มวกเหล็ก", "วังบอน"
+                ],
+                "องครักษ์": [
+                    "องครักษ์", "บางอ้อ"
+                ]
+            },
+            "นครปฐม": {
+                "เมืองนครปฐม": [
+                    "นครปฐม", "บางแขม", "คลองใหม่", "สนามชัย", "ดอนยายหอม"
+                ],
+                "กำแพงแสน": [
+                    "กำแพงแสน", "หอมเกร็ด", "บางFromClass", "ดอนตลุง"
+                ],
+                "สามพราน": [
+                    "สามพราน", "ดอนไก่เตี้ย", "บางกระทึก", "บางเลน"
+                ],
+                "พุทธมณฑล": [
+                    "ศาลายา", "บางงาม", "บางระโหง"
+                ],
+                "ดอนตูม": [
+                    "ดอนตูม", "บางปลาร้า", "บางระกำ"
+                ],
+                "บางเลน": [
+                    "บางเลน", "บางช้าง"
+                ]
+            },
+            "นครพนม": {
+                "เมืองนครพนม": [
+                    "นครพนม", "โพธิ์ตาก", "หนองแสง", "นาทราย", "หนองยอง"
+                ],
+                "ธาตุพนม": [
+                    "ธาตุพนม", "นาทม", "นาหัวบ่อ"
+                ],
+                "เรณูนคร": [
+                    "เรณูนคร", "หนองฮี", "โนนศิลา"
+                ],
+                "ปลาปาก": [
+                    "ปลาปาก", "โพนสวรรค์", "วังยาง"
+                ],
+                "ท่าอุเทน": [
+                    "ท่าอุเทน", "น้ำก่ำ", "โพนแพง"
+                ],
+                "บ้านแพง": [
+                    "บ้านแพง", "นาแก", "ภูซาง"
+                ],
+                "นาแก": [
+                    "นาแก", "โพนสวาง", "หนองบัว"
+                ]
+            },
+            "นครราชสีมา": {
+                "เมืองนครราชสีมา": [
+                    "ในเมือง", "จอหอ", "พลกรัง", "สุรนารี", "ปราริยา"
+                ],
+                "ปากช่อง": [
+                    "ปากช่อง", "หมูสี", "กลางดง", "หนองน้ำแดง"
+                ],
+                "สูงเนิน": [
+                    "สูงเนิน", "มะเกลือใหญ่", "มะเกลือเหนือ", "หนองตะไก้"
+                ],
+                "ปักธงชัย": [
+                    "ปักธงชัย", "หนองระเวียง", "หนองไม้ไผ่"
+                ],
+                "ด่านขุนทด": [
+                    "ด่านขุนทด", "ไทยสามัคคี", "โนนอาน"
+                ],
+                "ขามทะเลสอ": [
+                    "ขามทะเลสอ", "หนองหญ้าขาว", "บึงกระจับ"
+                ],
+                "เทพารักษ์": [
+                    "เทพารักษ์", "หนองบัวละคร"
+                ]
+            },
+            "นครศรีธรรมราช": {
+                "เมืองนครศรีธรรมราช": [
+                    "ในเมือง", "คลัง", "บางจาก", "ปากพูน", "ท่าวัง"
+                ],
+                "ลานสกา": [
+                    "ลานสกา", "แม่คำมี", "เขาขาว", "ท่าขนอม"
+                ],
+                "ทุ่งสง": [
+                    "ทุ่งสง", "นาโพธิ์", "ทุ่งใหญ่", "นาสัก"
+                ],
+                "ปากพนัง": [
+                    "ปากพนังฝั่งตะวันตก", "ปากพนังฝั่งตะวันออก", "บางพระ"
+                ],
+                "เชียรใหญ่": [
+                    "เชียรใหญ่", "สองแพรก"
+                ],
+                "หัวไทร": [
+                    "หัวไทร", "ทุ่งใส", "บางวัง"
+                ],
+                "เฉลิมพระเกียรติ": [
+                    "ฉวาง", "ทุ่งกระเดา"
+                ]
+            },
+            "นครสวรรค์": {
+                "เมืองนครสวรรค์": [
+                    "นครสวรรค์ตก", "นครสวรรค์ออก", "ปากน้ำโพ", "บางม่วง", "บางงาน"
+                ],
+                "ชุมแสง": [
+                    "ชุมแสง", "สายคำโหิุน", "หนองปลาไหล", "หนองปลิง"
+                ],
+                "ตาคลี": [
+                    "ตาคลี", "หนองหลวง", "หนองตูม"
+                ],
+                "ไพศาลี": [
+                    "ไพศาลี", "หนองเต็ง", "วังควง"
+                ],
+                "พยุหะคีรี": [
+                    "พยุหะคีรี", "วังตะแบก"
+                ],
+                "ลาดยาว": [
+                    "ลาดยาว", "เขาดิน", "แม่เลา"
+                ],
+                "ชุมตาบง": [
+                    "ชุมตาบง", "หนองสะแก"
+                ]
+            }, 
+            "นนทบุรี": {
+                "เมืองนนทบุรี": [
+                    "บางเขน", "บางกรวย", "ตลาดขวัญ", "ท่าทราย", "บางไผ่"
+                ],
+                "บางใหญ่": [
+                    "บางใหญ่", "บางพลับ", "บางแม่นาง"
+                ],
+                "บางบัวทอง": [
+                    "บางบัวทอง", "บางรักพัฒนา", "บางคูรัด"
+                ],
+                "ปากเกร็ด": [
+                    "ปากเกร็ด", "บ้านใหม่", "คลองสอง"
+                ],
+                "ไทรน้อย": [
+                    "ไทรน้อย", "บางพลี"
+                ],
+                "บางคูเวียง": [
+                    "บางคูเวียง", "บางรักใหญ่"
+                ]
+            },
+            "นราธิวาส": {
+                "เมืองนราธิวาส": [
+                    "บางนาค", "ลำภู", "บางโกระ", "กะลุวอเหนือ", "บาเระใต้"
+                ],
+                "ตากใบ": [
+                    "ตากใบ", "บางโม", "เกาะสะท้อน"
+                ],
+                "ระแงะ": [
+                    "ระแงะ", "บาเจาะ", "เบตง"
+                ],
+                "แว้ง": [
+                    "แว้ง", "ยะรม", "สุไหงโก-ลก"
+                ],
+                "รือเสาะ": [
+                    "รือเสาะ", "บือหนัง", "บาละ"
+                ],
+                "ยี่งอ": [
+                    "ยี่งอ", "บาตูปู", "ปิตู"
+                ],
+                "สุไหงปาดี": [
+                    "สุไหงปาดี", "บองอ"
+                ]
+            },
+            "น่าน": {
+                "เมืองน่าน": [
+                    "ไชยสถาน", "วรนคร", "ภูมินทร์", "ไกรลาส", "นาปรัง"
+                ],
+                "บ่อเกลือ": [
+                    "บ่อเกลือใต้", "บ่อเกลือเหนือ", "ภูฟ้า", "ป่าแลวหลวง"
+                ],
+                "เชียงกลาง": [
+                    "เชียงกลาง", "ภูฟ้า", "แม่สา", "แม่จริม"
+                ],
+                "เฉลิมพระเกียรติ": [
+                    "บ่อเกลือใต้", "บ่อเกลือเหนือ"
+                ],
+                "ท่าวังผา": [
+                    "ท่าวังผา", "นาแหง"
+                ],
+                "ปัว": [
+                    "ปัว", "นาทะ", "ภูแดง"
+                ],
+                "เวียงสา": [
+                    "เวียงสา", "บ่อเกลือ", "นาซ้าย"
+                ]
+            },
+            "บึงกาฬ": {
+                "เมืองบึงกาฬ": [
+                    "บึงกาฬ", "นาแสง", "หนองกอมเกาะ", "นาคาย", "โนนสมบูรณ์"
+                ],
+                "โซ่พิสัย": [
+                    "โซ่พิสัย", "หนองแข็ง", "โคกสว่าง", "นาแก"
+                ],
+                "ปากคาด": [
+                    "ปากคาด", "เหล่าเอื้อง", "หาดแพง", "นาดี"
+                ],
+                "เซกา": [
+                    "เซกา", "กกปลาซิว", "นาบัว"
+                ],
+                "พรเจริญ": [
+                    "พรเจริญ", "โพธิ์หมาก", "หนองยอง"
+                ],
+                "ศรีวิไล": [
+                    "ศรีวิไล", "หนองเข็ง", "บ้านต๋อม"
+                ]
+            },
+            "บุรีรัมย์": {
+                "เมืองบุรีรัมย์": [
+                    "ในเมือง", "สะแกโพรง", "เสมารักษ์", "ห้วยบง", "พลสงคราม"
+                ],
+                "คูเมือง": [
+                    "คูเมือง", "กระสัง", "แคน", "โนนดินแดง"
+                ],
+                "นางรอง": [
+                    "นางรอง", "ห้วยสำราญ", "โนนสุวรรณ", "ลำดวน"
+                ],
+                "ประโคนชัย": [
+                    "ประโคนชัย", "เมืองคง", "โนนเมือง"
+                ],
+                "ละหานทราย": [
+                    "ละหานทราย", "บ้านใหม่", "หนองตาด"
+                ],
+                "พุทไธสง": [
+                    "พุทไธสง", "หนองตาดใหญ่", "บ้านด่าน"
+                ],
+                "ลำปลายมาศ": [
+                    "ลำปลายมาศ", "โนนแดง", "โคกไม้ลาย"
+                ]
+            },
+            "ปทุมธานี": {
+                "เมืองปทุมธานี": [
+                    "บางปรอก", "บางคูวัด", "บางเดิม", "คลองหนึ่ง", "คลองสอง"
+                ],
+                "คลองหลวง": [
+                    "คลองหนึ่ง", "คลองสอง", "คลองสาม", "คลองสี่"
+                ],
+                "ลาดหลุมแก้ว": [
+                    "ลาดหลุมแก้ว", "บึงยี่โถ", "คลองเจ็ด", "คลองห้า"
+                ],
+                "สามโคก": [
+                    "สามโคก", "เชียงรากใหญ่", "เชียงรากน้อย"
+                ],
+                "หนองเสือ": [
+                    "หนองเสือ", "บึงคำพร้อย"
+                ],
+                "ธัญบุรี": [
+                    "ประชาธิปัตย์", "คลองหนึ่ง", "คลองสอง"
+                ]
+            },
+            "ประจวบคีรีขันธ์": {
+                "เมืองประจวบคีรีขันธ์": [
+                    "เกาะหลีเป๊ะ", "เขาเต่า", "ทรายทอง", "เกาะสิงห์", "คลองวาฬ"
+                ],
+                "บางสะพาน": [
+                    "บางสะพาน", "บางสะพานน้อย", "มะเร็ต", "ธงชัย"
+                ],
+                "ปราณบุรี": [
+                    "ปราณบุรี", "สามร้อยยอด", "ปากน้ำปราณ"
+                ],
+                "หัวหิน": [
+                    "หัวหิน", "หนองแก", "ตะวันออก", "บ่อพลับ"
+                ],
+                "กุยบุรี": [
+                    "กุยบุรี", "มาบจาก", "ทับคาง"
+                ],
+                "ทับสะแก": [
+                    "ทับสะแก", "บางยาง", "นาห้วย"
+                ],
+                "บางพลี": [
+                    "บางพลี", "บางแก้ว"
+                ]
+            },
+            "ปราจีนบุรี": {
+                "เมืองปราจีนบุรี": [
+                    "ในเมือง", "เนินหอม", "ดงขี้เหล็ก", "บางบริบูรณ์", "รอบเมือง"
+                ],
+                "กบินทร์บุรี": [
+                    "กบินทร์บุรี", "บ้านนา", "เมืองเก่า", "บ้านพร้าว"
+                ],
+                "นาดี": [
+                    "นาดี", "บางทราย", "นาแขม", "นาหินลาด"
+                ],
+                "ประจันตคาม": [
+                    "ประจันตคาม", "บางเตย", "หนองโพรง"
+                ],
+                "ศรีมหาโพธิ": [
+                    "ศรีมหาโพธิ", "บางกุ้ง", "หนองกอ"
+                ],
+                "กุดข้าวปุ้น": [
+                    "กุดข้าวปุ้น", "บางกระเบา"
+                ]
+            },
+            "ปัตตานี": {
+                "เมืองปัตตานี": [
+                    "ปัตตานี", "บาราเฮง", "ยะรม", "บางเขา", "สะบารัง"
+                ],
+                "ยะหริ่ง": [
+                    "ยะหริ่ง", "ตะโละแมะไร", "กะลุวอ", "บาเระเหนือ"
+                ],
+                "สายบุรี": [
+                    "สายบุรี", "บ้านกลาง", "ตาเนาะแมเราะ", "บางเก่า"
+                ],
+                "โคกโพธิ์": [
+                    "โคกโพธิ์", "จะรัง", "ยานา"
+                ],
+                "ไม้แก่น": [
+                    "ไม้แก่น", "ตลิ่งชัน"
+                ],
+                "ยะรัง": [
+                    "ยะรัง", "สะกาย", "บาเจาะ"
+                ],
+                "กะพ้อ": [
+                    "กะพ้อ", "บ้านนอก", "บ้านใน"
+                ]
+            },
+            "พะเยา": {
+                "เมืองพะเยา": [
+                    "เวียง", "บ้านต๋อม", "ห้วยแก้ว", "บ้านสาง", "ภูซาง"
+                ],
+                "ดอกคำใต้": [
+                    "ดอกคำใต้", "แม่ใส", "แม่กา"
+                ],
+                "ภูกามยาว": [
+                    "ภูกามยาว", "บ้านมาง", "แม่ต๋ำ"
+                ],
+                "เชียงคำ": [
+                    "เชียงคำ", "ห้วยยา", "หนองลา"
+                ],
+                "จุน": [
+                    "จุน", "บ้านเสียว", "ทุ่งกล้วย"
+                ],
+                "ภูซาง": [
+                    "ภูซาง", "ป่าสัก"
+                ]
+            }, 
+            "พังงา": {
+                "เมืองพังงา": [
+                    "ท้ายเหมือง", "โคกกลอย", "บางเหรียง", "เกาะปันหยี", "บางเตย"
+                ],
+                "กะปง": [
+                    "กะปง", "บางเหรียง", "บางทอง"
+                ],
+                "ทับปุด": [
+                    "ทับปุด", "นาเตย", "ท้ายเหมือง"
+                ],
+                "ทุ่งใหญ่": [
+                    "ทุ่งใหญ่", "ปากจักร"
+                ],
+                "คึกกระบ๊ก": [
+                    "คึกกระบ๊ก", "บางทอง"
+                ],
+                "กะทูน": [
+                    "กะทูน", "บางเบ้า"
+                ]
+            },
+            "พัทลุง": {
+                "เมืองพัทลุง": [
+                    "คูหาสวรรค์", "ลำปำ", "ควนขนุน", "เขาชัยสน", "บางกลา"
+                ],
+                "เขาชัยสน": [
+                    "เขาชัยสน", "ควนขนุน", "บางไทร"
+                ],
+                "ปากพลี": [
+                    "ปากพลี", "เกาะหมาก", "บางจาก"
+                ],
+                "ศรีนครินทร์": [
+                    "ศรีนครินทร์", "คลองหิน"
+                ],
+                "บางแก้ว": [
+                    "บางแก้ว", "บางปอ"
+                ],
+                "ป่าบอน": [
+                    "ป่าบอน", "บางสีพรม"
+                ]
+            },
+            "พิจิตร": {
+                "เมืองพิจิตร": [
+                    "ในเมือง", "หนองพยอม", "ทับกวาง", "บ้านบัว", "วังสำโรง"
+                ],
+                "วชิรบารมี": [
+                    "วชิรบารมี", "ยางงาม", "หนองหลุม"
+                ],
+                "ตะพานหิน": [
+                    "ตะพานหิน", "วังสำโรง", "ท่าหลวง"
+                ],
+                "สากเหล็ก": [
+                    "สากเหล็ก", "บ้านตึก"
+                ],
+                "บึงนาราง": [
+                    "บึงนาราง", "ท่าฬ่อ"
+                ],
+                "ทับคล้อ": [
+                    "ทับคล้อ", "เนินมะปราง"
+                ]
+            },
+            "พิษณุโลก": {
+                "เมืองพิษณุโลก": [
+                    "ในเมือง", "ชมสะอาด", "สมอแข", "วัดจันทร์", "ท่าทอง"
+                ],
+                "นครไทย": [
+                    "นครไทย", "ลำนารายณ์", "ห้วยม่วง", "ป่าแดง"
+                ],
+                "วังทอง": [
+                    "วังทอง", "ท่าซ้าย", "ท่ากระดาน"
+                ],
+                "บางระกำ": [
+                    "บางระกำ", "บางระกำใต้", "บางกระทุ่ม"
+                ],
+                "ชาติตระการ": [
+                    "ชาติตระการ", "บ่อภาค"
+                ],
+                "พรหมพิราม": [
+                    "พรหมพิราม", "ท่าเสา"
+                ]
+            },
+            "เพชรบุรี": {
+                "เมืองเพชรบุรี": [
+                    "ท่าแร้ง", "บ้านไทรงาม", "บางครก", "บางลง", "บางพึ่ง"
+                ],
+                "เขาย้อย": [
+                    "เขาย้อย", "หนองหญ้าปล้อง", "ยางกลาง"
+                ],
+                "ชะอำ": [
+                    "ชะอำ", "แก่งกระจาน", "ดอนทราย"
+                ],
+                "บ้านลาด": [
+                    "บ้านลาด", "หาดกระ",
+                    "ไร่ใหม่"
+                ],
+                "หนองหญ้าปล้อง": [
+                    "หนองหญ้าปล้อง", "บ้านแหลม"
+                ],
+                "ท่ายาง": [
+                    "ท่ายาง", "บางเสร่"
+                ]
+            },
+            "เพชรบูรณ์": {
+                "เมืองเพชรบูรณ์": [
+                    "ในเมือง", "ท่าพล", "บ้านโตก", "น้ำหนาว", "บ้านติ้ว"
+                ],
+                "หล่มสัก": [
+                    "หล่มสัก", "ตองฉลอง", "บ้านไร่"
+                ],
+                "เขาค้อ": [
+                    "เขาค้อ", "ริมสีม่วง", "ซับสมอ"
+                ],
+                "ดงเจริญ": [
+                    "ดงเจริญ", "บ้านติ้ว"
+                ],
+                "บึงสามพัน": [
+                    "บึงสามพัน", "หนองแจง"
+                ],
+                "ชนแดน": [
+                    "ชนแดน", "ซับพิหาร"
+                ],
+                "วิเชียรบุรี": [
+                    "วิเชียรบุรี", "แคมป์สน"
+                ]
+            },
+            "แพร่": {
+                "เมืองแพร่": [
+                    "ในเวียง", "สวนเขื่อน", "บ้านถ่อน", "บ้านเวียง", "หนองม่วง"
+                ],
+                "ร่อนพิบูลย์": [
+                    "ร่อนพิบูลย์", "แม่คำมี", "แม่หลอง"
+                ],
+                "ลอง": [
+                    "ลอง", "เวียง", "ป่าสัก"
+                ],
+                "สองเงา": [
+                    "สองเงา", "ทุ่งศรีอ่าน"
+                ],
+                "สูงเม่น": [
+                    "สูงเม่น", "แม่หล่าย"
+                ],
+                "เด่นชัย": [
+                    "เด่นชัย", "แม่คำมี"
+                ],
+                "วังชิ้น": [
+                    "วังชิ้น", "แม่สุก"
+                ]
+            },
+            "ภูเก็ต": {
+                "เมืองภูเก็ต": [
+                    "ตลาดใหญ่", "รัษฎา", "ฉลอง", "วิชิต", "กะทู้"
+                ],
+                "ถลาง": [
+                    "ไม้ขาว", "สาคู", "เทพกระษัตรี", "ศรีสุนทร"
+                ],
+                "กะทู้": [
+                    "กะทู้", "ป่าตอง", "หนองหอย"
+                ],
+                "วิชิต": [
+                    "วิชิต", "ในเมือง"
+                ]
+            },
+            "มหาสารคาม": {
+                "เมืองมหาสารคาม": [
+                    "ในเมือง", "ตลาด", "โคกก่อ", "บัวขาว", "หนองโก"
+                ],
+                "โกสุมพิสัย": [
+                    "โกสุมพิสัย", "โนนศิลา", "หนองกุง", "นาเชือก"
+                ],
+                "เชียงยืน": [
+                    "เชียงยืน", "หนองฮี", "หนองแสง", "หนองเรือ"
+                ],
+                "บรบือ": [
+                    "บรบือ", "หนองแก้ว", "โนนแดง"
+                ],
+                "นาเชือก": [
+                    "นาเชือก", "หนองแสง"
+                ]
+            }, 
+            "มุกดาหาร": {
+                "เมืองมุกดาหาร": [
+                    "มุกดาหาร", "โพนพิสัย", "บางทรายใหญ่", "นาโสก"
+                ],
+                "ดอนตาล": [
+                    "ดอนตาล", "คำอาฮวน", "หนองยอง", "หนองหมื่นถ่าน"
+                ],
+                "หนองสูง": [
+                    "หนองสูง", "หนองสูงเหนือ", "หนองสูงใต้"
+                ],
+                "นิคมคำสร้อย": [
+                    "นิคมคำสร้อย", "ดอนกอก", "คำบก"
+                ],
+                "ดงหลวง": [
+                    "ดงหลวง", "หนองแคน", "โพนทราย"
+                ]
+            },
+            "แม่ฮ่องสอน": {
+                "เมืองแม่ฮ่องสอน": [
+                    "จองคำ", "ผาบ่อง", "ห้วยโป่ง", "ปางหมู", "แม่สะเรียง"
+                ],
+                "ปาย": [
+                    "เวียงใต้", "แม่ฮี้", "เวียงเหนือ", "แม่เย็น"
+                ],
+                "ขุนยวม": [
+                    "ขุนยวมใต้", "ขุนยวมเหนือ", "แม่ยวมใต้"
+                ],
+                "แม่สะเรียง": [
+                    "แม่สะเรียง", "แม่เงา", "แม่ยะ"
+                ],
+                "ปางมะผ้า": [
+                    "ปางมะผ้า", "แม่นาจร"
+                ]
+            },
+            "ยโสธร": {
+                "เมืองยโสธร": [
+                    "ในเมือง", "สำราญ", "แจ้งใหญ่", "ดู่ทุ่ง"
+                ],
+                "ทรายมูล": [
+                    "ทรายมูล", "คำแก้ว", "เหล่ากลาง"
+                ],
+                "กุดชุม": [
+                    "กุดชุม", "นาแวง", "นาเกษม"
+                ],
+                "เลิงนกทา": [
+                    "เลิงนกทา", "บ้านเขือง"
+                ],
+                "ไทยเจริญ": [
+                    "ไทยเจริญ", "ดอนแนน"
+                ]
+            },
+            "ยะลา": {
+                "เมืองยะลา": [
+                    "สะเตง", "หน้าถ้ำ", "บาเระเหนือ", "ยะรม", "บางเขา"
+                ],
+                "เบตง": [
+                    "เบตง", "ยะรัง", "ตาเนาะแมเราะ"
+                ],
+                "ธารโต": [
+                    "ธารโต", "บาเจาะ", "ลำใหม่"
+                ],
+                "รามัน": [
+                    "รามัน", "กาแล", "บ้านนา"
+                ],
+                "บันนังสตา": [
+                    "บันนังสตา", "ยะลาใต้"
+                ]
+            },
+            "ร้อยเอ็ด": {
+                "เมืองร้อยเอ็ด": [
+                    "ในเมือง", "รอบเมือง", "หนองขวาง", "หลักเมือง"
+                ],
+                "เกษตรวิสัย": [
+                    "เกษตรวิสัย", "หนองใหญ่", "หนองแวง", "หนองกินเพล"
+                ],
+                "สุวรรณภูมิ": [
+                    "สุวรรณภูมิ", "หินกอง", "บ้านยาง", "หนองแก้ว"
+                ],
+                "เสลภูมิ": [
+                    "เสลภูมิ", "หนองเม็ก", "หนองแซง"
+                ],
+                "โพธิ์ชัย": [
+                    "โพธิ์ชัย", "หนองขาม"
+                ]
+            },
+            "ระนอง": {
+                "เมืองระนอง": [
+                    "เขานิเวศน์", "บางริ้น", "ปากน้ำ", "บางนอน"
+                ],
+                "กระบุรี": [
+                    "กระบุรี", "ละอุ่นใต้", "นาคา", "หาดส้มแป้น"
+                ],
+                "ละอุ่น": [
+                    "ละอุ่น", "นาคา", "ปากจักร"
+                ],
+                "สุขสำราญ": [
+                    "สุขสำราญ", "บางดี"
+                ]
+            },
+            "ระยอง": {
+                "เมืองระยอง": [
+                    "ตลาด", "ปากน้ำ", "เนินพระ", "บ้านแลง", "มาบตาพุด"
+                ],
+                "ปลวกแดง": [
+                    "ปลวกแดง", "มาบยางพร", "ตาสิทธิ์"
+                ],
+                "บ้านฉาง": [
+                    "บ้านฉาง", "ตาสิทธิ์", "นาป่า"
+                ],
+                "แกลง": [
+                    "แกลง", "บ้านกร่ำ", "ปากน้ำประแส"
+                ],
+                "วังจันทร์": [
+                    "วังจันทร์", "ชากโดน"
+                ]
+            },
+            "ราชบุรี": {
+                "เมืองราชบุรี": [
+                    "หน้าเมือง", "เจดีย์หอย", "ปากท่อ", "สวนงาม"
+                ],
+                "จอมบึง": [
+                    "จอมบึง", "ปากช่อง", "ด่านทับตะโก"
+                ],
+                "ดำเนินสะดวก": [
+                    "ดำเนินสะดวก", "ประสาทวิสัย", "ท่าเรือ"
+                ],
+                "บางแพ": [
+                    "บางแพ", "บางช้าง", "บางใหญ่"
+                ],
+                "ปากท่อ": [
+                    "ปากท่อ", "หนองปลาไหล", "หนองกระทุ่ม"
+                ],
+                "บ้านคา": [
+                    "บ้านคา", "รางบัว"
+                ]
+            },
+            "ลพบุรี": {
+                "เมืองลพบุรี": [
+                    "ในเมือง", "ทะเลชุบศร", "หนองยายโต๊ะ", "โคกสำโรง", "เขาทราย"
+                ],
+                "โคกสำโรง": [
+                    "โคกสำโรง", "หนองยายโต๊ะ", "ห้วยโป่ง", "ซับสนุ่น"
+                ],
+                "สระยายโสม": [
+                    "สระยายโสม", "ห้วยโป่ง", "หนองผักแว่น"
+                ],
+                "พัฒนานิคม": [
+                    "พัฒนานิคม", "รางจริง", "หนองขาม"
+                ],
+                "ชัยบาดาล": [
+                    "ชัยบาดาล", "ม่วงค่อม", "บัวชุม"
+                ]
+            },
+            "ลำปาง": {
+                "เมืองลำปาง": [
+                    "สบตุ๋ย", "บ่อแฮ้ว", "แม่เมาะ", "เวียงเหนือ", "บ้านเสด็จ"
+                ],
+                "แม่เมาะ": [
+                    "แม่เมาะ", "บ้านดง", "แม่เมาะหลวง"
+                ],
+                "เกาะคา": [
+                    "เกาะคา", "แม่เสรียง", "บ้านเอื้อ"
+                ],
+                "เสริมงาม": [
+                    "เสริมงาม", "แม่สัน"
+                ],
+                "แจ้ห่ม": [
+                    "แจ้ห่ม", "แม่ยาว"
+                ]
+            }, 
+            "ลำพูน": {
+                "เมืองลำพูน": [
+                    "เวียง", "เหมืองง่า", "บ้านกลาง", "ป่าสัก", "หนองปลาไหล"
+                ],
+                "แม่ทา": [
+                    "แม่ทา", "บ้านโฮ่ง", "ทุ่งกล้วย"
+                ],
+                "ป่าซาง": [
+                    "ป่าซาง", "หนองปลาเงิน", "เวียงยอง"
+                ],
+                "ท่าวังแดง": [
+                    "ท่าวังแดง", "หนองเครือ"
+                ],
+                "บ้านธิ": [
+                    "บ้านธิ", "บ้านธิใต้"
+                ]
+            },
+            "เลย": {
+                "เมืองเลย": [
+                    "กุดป่อง", "นาอาน", "เชียงคาน", "ภูเรือ", "นาแห้ว"
+                ],
+                "เชียงคาน": [
+                    "เชียงคาน", "หาดทรายขาว", "บ้านเดื่อ"
+                ],
+                "ภูเรือ": [
+                    "กกหาม", "ภูเรือ", "ปากวัง"
+                ],
+                "ด่านซ้าย": [
+                    "ด่านซ้าย", "ปากเพีย"
+                ],
+                "วังสะพุง": [
+                    "วังสะพุง", "ศรีสงคราม"
+                ]
+            },
+            "สกลนคร": {
+                "เมืองสกลนคร": [
+                    "ธาตุเชิงชุม", "ปากกัด", "ม่วงหวาน", "ธาตุ", "เหล่าปอ"
+                ],
+                "พรรณนานิคม": [
+                    "พรรณนานิคม", "เหล่าพาชี", "โนนหอม"
+                ],
+                "วาริชภูมิ": [
+                    "วาริชภูมิ", "นาคำ", "หนองสนม"
+                ],
+                "สว่างแดนดิน": [
+                    "สว่างแดนดิน", "โพนสวรรค์"
+                ],
+                "เต่างอย": [
+                    "เต่างอย", "กกปลาซิว"
+                ]
+            },
+            "สตูล": {
+                "เมืองสตูล": [
+                    "ฉลุง", "คลองขุด", "บางปู", "ฉลาง", "แหลมสน"
+                ],
+                "ทุ่งหว้า": [
+                    "ทุ่งหว้า", "บางหมาก", "บางปอ"
+                ],
+                "ละงู": [
+                    "ละงู", "ท่าโรง", "บ้านควน"
+                ],
+                "ท่าแพ": [
+                    "ท่าแพ", "บางมะเลื่อม"
+                ],
+                "ควนโดน": [
+                    "ควนโดน", "ควนกาหลง"
+                ]
+            },
+            "สมุทรปราการ": {
+                "เมืองสมุทรปราการ": [
+                    "ปากน้ำ", "สำโรงเหนือ", "สำโรงใต้", "บางเมือง", "บางพลีใหญ่"
+                ],
+                "พระประแดง": [
+                    "พระประแดง", "บางพึ่ง", "บางจาก"
+                ],
+                "บางพลี": [
+                    "บางพลีใหญ่", "บางแก้ว", "บางหญ้ารับ"
+                ],
+                "พระสมุทรเจดีย์": [
+                    "ในคลองบางปลากด", "บางน้ำเปรี้ยว"
+                ],
+                "บางบ่อ": [
+                    "บางบ่อ", "บางพลีน้อย"
+                ]
+            },
+            "สมุทรสงคราม": {
+                "เมืองสมุทรสงคราม": [
+                    "เจษฎา", "บางจะเกร็ง", "บางกระบือ", "บางแก้ว", "บางพลับ"
+                ],
+                "บางคนที": [
+                    "บางคนที", "บางกุ้ง", "บางกระบือ"
+                ],
+                "อัมพวา": [
+                    "อัมพวา", "สวนหลวง", "บางนางลี่"
+                ],
+                "แกลง": [
+                    "แกลง", "บางช้าง"
+                ]
+            },
+            "สมุทรสาคร": {
+                "เมืองสมุทรสาคร": [
+                    "มหาชัย", "บ้านบ่อ", "ท่าทราย", "บางโทรัด", "บางปลา"
+                ],
+                "กระทุ่มแบน": [
+                    "กระทุ่มแบน", "แพรกษา", "บางยาง"
+                ],
+                "บ้านแพ้ว": [
+                    "บ้านแพ้ว", "หลักสาม", "บางปลาหมอ"
+                ],
+                "เมืองใหม่": [
+                    "เมืองใหม่", "บางหญ้าแพรก"
+                ]
+            },
+            "สระแก้ว": {
+                "เมืองสระแก้ว": [
+                    "สระแก้ว", "โคกสูง", "ตาเกษ", "ทัพไทย", "อรัญประเทศ"
+                ],
+                "อรัญประเทศ": [
+                    "อรัญประเทศ", "ทัพเสด็จ", "คลองใหม่"
+                ],
+                "วังน้ำเย็น": [
+                    "วังน้ำเย็น", "ตาหลัง", "บางตะโก"
+                ],
+                "คลองหาด": [
+                    "คลองหาด", "หนองแสง"
+                ],
+                "อรัญประเทศ": [
+                    "อรัญประเทศ", "คลองใหม่"
+                ]
+            },
+            "สระบุรี": {
+                "เมืองสระบุรี": [
+                    "ปากเพรียว", "นาโฉง", "ตลุง", "หนองแขม", "เสาเก้า"
+                ],
+                "แก่งคอย": [
+                    "แก่งคอย", "ชะอม", "ลาดบัวขาว"
+                ],
+                "มวกเหล็ก": [
+                    "มวกเหล็ก", "ลำสมพรม", "มิตรภาพ"
+                ],
+                "เสาไห้": [
+                    "เสาไห้", "หนองสรวง"
+                ],
+                "หนองแค": [
+                    "หนองแค", "บ้านลำ"
+                ]
+            }, 
+            "สิงห์บุรี": {
+                "เมืองสิงห์บุรี": ["บางกระบือ", "บางเลน", "บางพุทรา", "บางระจัน"],
+                "พรหมบุรี": ["พรหมบุรี", "โพธิ์เก้าต้น", "หาดแก้ว", "บางขมิ้น"],
+                "อินทร์บุรี": ["อินทร์บุรี", "เขาแก้ว", "วังใหญ่", "ทับสมอ"],
+                "ท่าช้าง": ["ท่าช้าง", "แพรกษา"]
+            },
+            "สุโขทัย": {
+                "เมืองสุโขทัย": ["เมืองเก่า", "บ้านกล้วย", "นาเชียด", "บ้านหลุม", "ศรีสำราญ"],
+                "ศรีสัชนาลัย": ["ศรีสัชนาลัย", "ทุ่งเสลี่ยม", "บ้านแก่ง", "บ้านด่าน"],
+                "สวรรยา": ["สวรรยา", "บางกุ้ง", "บางแย้"],
+                "คีรีมาศ": ["คีรีมาศ", "ทุ่งยางโทน"],
+                "กง": ["กง", "หนองอ้อ"]
+            },
+            "สุพรรณบุรี": {
+                "เมืองสุพรรณบุรี": ["รั้วใหญ่", "ท่าพี่เลี้ยง", "ดอนตะโก", "สองพี่น้อง", "บางกุ้ง"],
+                "บางปลาม้า": ["บางปลาม้า", "บางลี่", "บางผึ้ง", "บางปลาสร้อย"],
+                "ดอนเจดีย์": ["ดอนเจดีย์", "บางนมโค", "หนองโอ่ง"],
+                "เดิมบางนางบวช": ["เดิมบางนางบวช", "บางหลวง"],
+                "ศรีประจันต์": ["ศรีประจันต์", "บางยาง"]
+            },
+            "สุราษฎร์ธานี": {
+                "เมืองสุราษฎร์ธานี": ["ตลาด", "บางใบไม้", "บางกุ้ง", "บางนอน", "บางเขน"],
+                "เกาะสมุย": ["บ่อผุด", "แม่หน้า", "ตลิ่งงาม", "มะเร็ต"],
+                "ไชยา": ["ไชยา", "ปากแพรก", "ท่าขนอน", "ท่าฉนวน"],
+                "เวียงสระ": ["เวียงสระ", "คลองปราบ", "ท่าระหัด"],
+                "บ้านนาสาร": ["บ้านนาสาร", "บ้านนาดำ"]
+            },
+            "สุรินทร์": {
+                "เมืองสุรินทร์": ["นอกเมือง", "ในเมือง", "ดู่", "ตาเมียง", "ท่าสว่าง"],
+                "ท่าตูม": ["ท่าตูม", "ระเวียง", "กระเบื้อง", "โนนสูง"],
+                "ปราสาท": ["ปราสาท", "ตาเป๊ก", "ด่าน", "สำโรง"],
+                "ศีขรภูมิ": ["ศีขรภูมิ", "ทุ่งแสงทอง"],
+                "จอมพระ": ["จอมพระ", "ลำดวน"]
+            },
+            "หนองคาย": {
+                "เมืองหนองคาย": ["หนองคาย", "หาดคำ", "บ้านม่วง", "บ้านฝาง", "โพนพิสัย"],
+                "ท่าบ่อ": ["ท่าบ่อ", "ปากคาด", "บ้านเดื่อ", "บ้านแพง"],
+                "รัตนวาปี": ["รัตนวาปี", "โนนสะอาด", "นาด้วง"],
+                "สังคม": ["สังคม", "ห้วยบ่อซาว"],
+                "โพนพิสัย": ["โพนพิสัย", "บ้านดู่"]
+            },
+            "หนองบัวลำภู": {
+                "เมืองหนองบัวลำภู": ["หนองบัวลำภู", "กุดน้ำเย็น", "กุดเหวง", "โนนทอง", "หนองแสง"],
+                "นาวัง": ["นาวัง", "หนองกอมเกาะ", "หนองแสง", "นาคำ"],
+                "ศรีบุญเรือง": ["ศรีบุญเรือง", "โนนสมบูรณ์", "โนนทอง", "โนนสะอาด"],
+                "นาทม": ["นาทม", "หนองกุง"],
+                "สุวรรณคาม": ["สุวรรณคาม", "หนองหญ้าทำ"]
+            },
+            "อ่างทอง": {
+                "เมืองอ่างทอง": ["ตลาดหลวง", "บางแก้ว", "ป่าโมกเหนือ", "ป่าโมกใต้", "บางเจ้าฉ่า"],
+                "ป่าโมก": ["ป่าโมก", "สายทอง", "ท่าหลวง"],
+                "สามโก้": ["สามโก้", "บางนางลี่", "บางประลัน"],
+                "แสวงหา": ["แสวงหา", "บางเสด็จ"],
+                "วิเศษชัยชาญ": ["วิเศษชัยชาญ", "ห้วยกรด"]
+            },
+            "อุดรธานี": {
+                "เมืองอุดรธานี": ["หมากแข้ง", "หนองบัว", "บ้านจั่น", "บ้านค้อ", "บ้านขาว"],
+                "หนองวัวซอ": ["หนองวัวซอ", "สร้อยพร้าว", "หนองกุง", "บ้านดง"],
+                "กุดจับ": ["กุดจับ", "บ้านขาว", "บ้านดง", "บ้านดอน"],
+                "บ้านดุง": ["บ้านดุง", "บ้านดง"],
+                "หนองหาน": ["หนองหาน", "หนองกอมเกาะ"]
+            },
+            "อุทัยธานี": {
+                "เมืองอุทัยธานี": ["สะแกกรัง", "ทัพหลวง", "ไร่รถ", "ทุ่งเทา", "ทุ่งยายหอม"],
+                "ทายา": ["ทายา", "หนองยายบู่", "ยางซ่อม", "ท่าซุง"],
+                "ลานสัก": ["ลานสัก", "บ้านกลอน", "ทุ่งน้อย", "ห้วยแห้ง"],
+                "หนองขาหย่าง": ["หนองขาหย่าง", "ทุ่งพง", "เขาบางโฉ"],
+                "บ้านไร่": ["บ้านไร่", "หนองหัวฟาน", "วังศิลา"]
+            }, 
+            "อุตรดิตถ์": {
+                "เมืองอุตรดิตถ์": ["ท่าเสา", "พิชัย", "นาอุเทน", "ท่าแฝก", "หาดไคร้"],
+                "ลับแล": ["ท่าแฝก", "ผาเลียน", "แม่พูล", "วังกะพี้"],
+                "ทองแสนขัน": ["ท่าเส้า", "นาไร่", "ทองแสนขัน", "แม่ละเมา"],
+                "บ้านโคก": ["บ้านโคก", "บ้านเดื่อ"],
+                "นาทะ": ["นาทะ", "ท่าจำปี"]
+            },
+            "อุบลราชธานี": {
+                "เมืองอุบลราชธานี": ["แจระแม", "ขามใหญ่", "แจ้ง", "เขื่องใน", "หาดใหญ่"],
+                "วารินชำราบ": ["วารินชำราบ", "โนนสวาง", "หนองช้างศึก", "คำน้ำแซบ"],
+                "โขงเจียม": ["โขงเจียม", "หนองแสง", "บ่อโขง", "หาดสูง"],
+                "สิรินธร": ["สิรินธร", "กุดลาด"],
+                "พิบูลมังสาหาร": ["พิบูลมังสาหาร", "แขม", "ดอนมดแดง"]
+            },
+            "อำนาจเจริญ": {
+                "เมืองอำนาจเจริญ": ["เทอดไทย", "บุ่ง", "โนนหนา", "นาวังแสง", "โพธิ์เงิน"],
+                "ชานุมาน": ["ชานุมาน", "ห้วยยาง", "โคกสะอาด", "สำโรง", "บ้านผือ"],
+                "ปทุมราชวงศา": ["ปทุมราชวงศา", "เหล่า", "หนองไข่น้ำ", "หนองหม้าย"],
+                "เสนางคนิคม": ["เสนางคนิคม", "สร้างถ่อ"],
+                "ลืออำนาจ": ["ลืออำนาจ", "ดอนศรีเมือง"]
+            }
+        };
+        let currentAmphoes = [];
+        let currentTambons = [];
+
+        // --- DOM Elements ---
+        const form = document.getElementById('userDataForm');
+        const inputChangwat = document.getElementById('inputChangwat');
+        const optionsChangwat = document.getElementById('optionsChangwat');
+        const hiddenChangwat = document.getElementById('จังหวัด');
+        
+        const inputAmphoe = document.getElementById('inputAmphoe');
+        const optionsAmphoe = document.getElementById('optionsAmphoe');
+        const hiddenAmphoe = document.getElementById('อำเภอ');
+
+        const inputTambon = document.getElementById('inputTambon');
+        const optionsTambon = document.getElementById('optionsTambon');
+        const hiddenTambon = document.getElementById('ตำบล');
+
+        const expiryDateInput = document.getElementById('วันหมดอายุ');
+        const statusInput = document.getElementById('สถานะ');
+        const registrationDateInput = document.getElementById('วันที่บันทึก'); 
+        
+        // New display spans for Buddhist Era year
+        const displayRegistrationYearBE = document.getElementById('displayRegistrationYearBE');
+        const displayExpiryYearBE = document.getElementById('displayExpiryYearBE');
+
+        const searchOrgNameInput = document.getElementById('searchOrgName');
+        const searchOrgButton = document.getElementById('searchOrgButton');
+        const hiddenRowIdInput = document.getElementById('hiddenRowIdForUpdate');
+        const submitButtonText = document.getElementById('submitButtonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        const messageModal = document.getElementById('messageModal');
+        const modalMessageText = document.getElementById('modalMessageText');
+        const modalCloseButton = document.getElementById('modalCloseButton');
+        const modalOkButton = document.getElementById('modalOkButton');
+        const searchResultsContainer = document.getElementById('searchResultsContainer'); 
+        
+        // IMPORTANT: Replace 'YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' with the actual URL of your Google Apps Script Web App.
+        // You will get this URL after deploying the script as a Web App in the Google Apps Script Editor.
+        // Example: https://script.google.com/macros/s/AKfycbyr99Rv4iZ79Y1liK4bYeOG7uznlLCtkvSWBK4el-dFwB5cSIBZten-13HVBWnICRyh/exec
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw3Xbs7c7qjPkJ5CoP-TYL8UazU_uiVtRkLLE2uX6lHNNJ6QRPmRk5s5uK94nCWJ5jC/exec"; 
+
+        // --- Functions for Searchable Dropdowns ---
+        function populateDropdown(optionsContainer, items, hiddenInputElement, inputField, onSelectCallback) {
+            optionsContainer.innerHTML = '';
+            optionsContainer.setAttribute('aria-expanded', 'false'); // Default to collapsed
+
+            if (!items || items.length === 0) {
+                optionsContainer.classList.add('hidden');
+                return;
+            }
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item;
+                div.className = 'p-2 cursor-pointer hover:bg-pink-100 rounded-md'; 
+                div.setAttribute('role', 'option');
+                div.onclick = () => {
+                    inputField.value = item;
+                    if (hiddenInputElement) {
+                        hiddenInputElement.value = item;
+                    }
+                    optionsContainer.classList.add('hidden');
+                    optionsContainer.setAttribute('aria-expanded', 'false');
+                    inputField.focus(); 
+                    if (onSelectCallback) onSelectCallback(item);
+                };
+                optionsContainer.appendChild(div);
+            });
+            optionsContainer.setAttribute('aria-expanded', 'true'); 
+        }
+
+        function filterDropdownOptions(inputElement, optionsContainerId, sourceArray) {
+            const filter = inputElement.value.toLowerCase();
+            const optionsContainer = document.getElementById(optionsContainerId);
+            
+            let hiddenInputElement;
+            let onSelectCallback;
+
+            if (optionsContainerId === 'optionsChangwat') {
+                hiddenInputElement = hiddenChangwat;
+                onSelectCallback = selectChangwat;
+            } else if (optionsContainerId === 'optionsAmphoe') {
+                hiddenInputElement = hiddenAmphoe;
+                onSelectCallback = selectAmphoe;
+            } else if (optionsContainerId === 'optionsTambon') {
+                hiddenInputElement = hiddenTambon;
+                onSelectCallback = null;
+            }
+
+            const filteredItems = sourceArray.filter(item => item.toLowerCase().includes(filter));
+
+            populateDropdown(optionsContainer, filteredItems, hiddenInputElement, inputElement, onSelectCallback);
+            
+            if (filteredItems.length > 0) {
+                 optionsContainer.classList.remove('hidden');
+                 optionsContainer.setAttribute('aria-expanded', 'true');
+            } else {
+                 optionsContainer.classList.add('hidden');
+                 optionsContainer.setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        function toggleDropdown(optionsContainerId, show) {
+            const optionsContainer = document.getElementById(optionsContainerId);
+            const inputId = optionsContainerId.replace('options', 'input');
+            const inputElement = document.getElementById(inputId);
+
+            if (show) {
+                optionsContainer.classList.remove('hidden');
+                optionsContainer.setAttribute('aria-expanded', 'true');
+                let sourceArray;
+                let onSelectCallback;
+                let hiddenInputElement;
+
+                if (optionsContainerId === 'optionsChangwat') {
+                    sourceArray = Object.keys(thaiAdminData);
+                    onSelectCallback = selectChangwat;
+                    hiddenInputElement = hiddenChangwat;
+                } else if (optionsContainerId === 'optionsAmphoe') {
+                    sourceArray = currentAmphoes;
+                    onSelectCallback = selectAmphoe;
+                    hiddenInputElement = hiddenAmphoe;
+                } else if (optionsContainerId === 'optionsTambon') {
+                    sourceArray = currentTambons;
+                    onSelectCallback = null;
+                    hiddenInputElement = hiddenTambon;
+                }
+                
+                if (inputElement && hiddenInputElement) {
+                    populateDropdown(optionsContainer, sourceArray, hiddenInputElement, inputElement, onSelectCallback);
+                }
+
+            } else {
+                setTimeout(() => {
+                    const inputId = optionsContainerId.replace('options', 'input');
+                    const isFocusOnInput = document.activeElement.id === inputId;
+                    const isFocusOnDropdownOption = optionsContainer.contains(document.activeElement);
+
+                    if (!isFocusOnInput && !isFocusOnDropdownOption) {
+                       optionsContainer.classList.add('hidden');
+                       optionsContainer.setAttribute('aria-expanded', 'false');
+                    }
+                }, 200);
+            }
+        }
+        
+        // Add blur event listeners to hide dropdowns
+        [inputChangwat, inputAmphoe, inputTambon].forEach(input => {
+            input.addEventListener('focusout', (event) => {
+                const optionsId = input.id.replace('input', 'options');
+                const optionsDiv = document.getElementById(optionsId);
+                if (optionsDiv && !optionsDiv.contains(event.relatedTarget)) {
+                    toggleDropdown(optionsId, false);
+                }
+            });
+        });
+
+
+        // --- Address Logic ---
+        // --- Address Logic (แก้ไขให้สามารถกรอกข้อมูลเองได้) ---
+        function selectChangwat(changwat) {
+            hiddenChangwat.value = changwat;
+            currentAmphoes = changwat && thaiAdminData[changwat] ? Object.keys(thaiAdminData[changwat]) : [];
+            
+            // เปิดให้สามารถกรอกข้อมูลได้ทันที ไม่ต้องปิดไว้
+            inputAmphoe.disabled = false;
+            inputAmphoe.value = '';
+            hiddenAmphoe.value = '';
+            optionsAmphoe.innerHTML = '';
+            
+            inputTambon.disabled = true; // ตำบลยังปิดไว้จนกว่าจะเลือกอำเภอ
+            inputTambon.value = '';
+            hiddenTambon.value = '';
+            optionsTambon.innerHTML = '';
+            currentTambons = [];
+            
+            if (changwat) {
+                populateDropdown(optionsAmphoe, currentAmphoes, hiddenAmphoe, inputAmphoe, selectAmphoe);
+            } else {
+                toggleDropdown('optionsAmphoe', false);
+                toggleDropdown('optionsTambon', false);
+            }
+        }
+
+        function selectAmphoe(amphoe) {
+            hiddenAmphoe.value = amphoe;
+            const selectedChangwat = hiddenChangwat.value;
+            currentTambons = selectedChangwat && amphoe && thaiAdminData[selectedChangwat] && thaiAdminData[selectedChangwat][amphoe] 
+                ? thaiAdminData[selectedChangwat][amphoe] 
+                : [];
+            
+            // เปิดให้สามารถกรอกข้อมูลได้ทันที
+            inputTambon.disabled = false;
+            inputTambon.value = '';
+            hiddenTambon.value = '';
+            optionsTambon.innerHTML = '';
+            
+            if (amphoe) {
+                populateDropdown(optionsTambon, currentTambons, hiddenTambon, inputTambon, null);
+            } else {
+                toggleDropdown('optionsTambon', false);
+            }
+        }
+
+        // เพิ่มฟังก์ชันสำหรับอัปเดตค่าที่ซ่อนอยู่เมื่อผู้ใช้พิมพ์เอง
+        inputAmphoe.addEventListener('input', function() {
+            hiddenAmphoe.value = this.value;
+        });
+
+        inputTambon.addEventListener('input', function() {
+            hiddenTambon.value = this.value;
+        });
+
+        // แก้ไขฟังก์ชัน filterDropdownOptions เพื่ออนุญาตให้กรอกข้อมูลเองได้
+        function filterDropdownOptions(inputElement, optionsContainerId, sourceArray) {
+            const filter = inputElement.value.toLowerCase();
+            const optionsContainer = document.getElementById(optionsContainerId);
+            let hiddenInputElement;
+            let onSelectCallback;
+            
+            if (optionsContainerId === 'optionsChangwat') {
+                hiddenInputElement = hiddenChangwat;
+                onSelectCallback = selectChangwat;
+            } else if (optionsContainerId === 'optionsAmphoe') {
+                hiddenInputElement = hiddenAmphoe;
+                onSelectCallback = selectAmphoe;
+            } else if (optionsContainerId === 'optionsTambon') {
+                hiddenInputElement = hiddenTambon;
+                onSelectCallback = null;
+            }
+            
+            // อัปเดตค่าที่ซ่อนอยู่ทุกครั้งที่มีการพิมพ์
+            if (hiddenInputElement) {
+                hiddenInputElement.value = inputElement.value;
+            }
+            
+            const filteredItems = sourceArray.filter(item => item.toLowerCase().includes(filter));
+            populateDropdown(optionsContainer, filteredItems, hiddenInputElement, inputElement, onSelectCallback);
+            
+            if (filteredItems.length > 0 && filter.trim() !== '') {
+                optionsContainer.classList.remove('hidden');
+                optionsContainer.setAttribute('aria-expanded', 'true');
+            } else {
+                optionsContainer.classList.add('hidden');
+                optionsContainer.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        // --- Date and Status Logic ---
+        /**
+         * Sets the registration date input to today's date in Gregorian format.
+         * The HTML input type="date" always expects Gregorian (YYYY-MM-DD).
+         */
+        function setRegistrationDate() {
+            const today = new Date();
+            const yearAD = today.getFullYear(); 
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            registrationDateInput.value = `${yearAD}-${month}-${day}`;
+            displayRegistrationYearBE.textContent = `(พ.ศ. ${yearAD + 543})`;
+        }
+
+        /**
+         * Updates the status based on the expiry date.
+         * Also handles the display of the expiry date in Gregorian for the input field.
+         */
+        function updateStatus() {
+            if (!expiryDateInput.value) {
+                statusInput.value = '-';
+                statusInput.className = statusInput.className.replace(/text-(red|yellow|green)-500 font-semibold/, 'text-gray-500');
+                displayExpiryYearBE.textContent = ''; // Clear BE year if no expiry date
+                return;
+            }
+            const expiry = new Date(expiryDateInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Compare dates only
+
+            let statusText = '';
+            let statusColorClass = 'text-gray-500'; 
+
+            if (expiry < today) {
+                statusText = 'หมดอายุ (Expired)';
+                statusColorClass = 'text-red-500 font-semibold';
+            } else if (expiry.getTime() === today.getTime()) {
+                statusText = 'หมดอายุวันนี้ (Expires Today)';
+                statusColorClass = 'text-yellow-500 font-semibold';
+            } else {
+                statusText = 'ใช้งาน (Active)';
+                statusColorClass = 'text-green-500 font-semibold';
+            }
+            statusInput.value = statusText;
+            statusInput.className = statusInput.className.replace(/text-(red|yellow|green|gray)-500\s*(font-semibold)?/, '');
+            statusInput.classList.add(...statusColorClass.split(' '));
+
+            // Update Buddhist Era year for expiry date display
+            const expiryYearAD = expiry.getFullYear();
+            displayExpiryYearBE.textContent = `(พ.ศ. ${expiryYearAD + 543})`;
+        }
+        
+        // --- Modal Functions ---
+        function showModal(message, isSuccess = true) {
+            modalMessageText.textContent = message;
+            modalMessageText.className = isSuccess ? 'text-lg text-green-600' : 'text-lg text-red-600';
+            messageModal.style.display = "flex";
+            modalOkButton.disabled = false; // Ensure button is clickable when modal appears
+            console.log("Modal shown with message:", message);
+        }
+
+        function closeModal() {
+            console.log("Attempting to close modal.");
+            modalMessageText.textContent = ''; 
+            messageModal.style.display = "none";
+            modalOkButton.disabled = false; // Ensure button is re-enabled after closing
+        }
+
+        window.onclick = function(event) {
+            if (event.target == messageModal) {
+                closeModal();
+            }
+        }
+
+        /**
+         * Helper function to format a date string into Beale-MM-DD for date input fields.
+         * This function is crucial for handling dates coming from the Google Sheet (which might be in BE year)
+         * and converting them to Gregorian for the HTML date input.
+         * @param {string} dateString - The date string to format. Can be in BE or Gregorian.
+         * @returns {string} Formatted date string (YYYY-MM-DD Gregorian) or empty string if invalid.
+         */
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+            let date;
+
+            // Try to parse as a Date object directly (assumes Gregorian if year is small, or handles ISO format)
+            date = new Date(dateString);
+
+            // If parsing fails or results in an invalid date, try to interpret as Buddhist Era
+            if (isNaN(date.getTime())) {
+                // Attempt to parse as DD/MM/YYYY or DD-MM-YYYY (common Thai formats)
+                const parts = dateString.split(/[\/-]/);
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10);
+                    let year = parseInt(parts[2], 10);
+
+                    // If year is in Buddhist Era (e.g., > 2500), convert to Gregorian
+                    if (year > 2500) { // Simple heuristic for BE year
+                        year -= 543;
+                    }
+                    date = new Date(year, month - 1, day); // Month is 0-indexed
+                } else {
+                    // Fallback for other potential formats, or return empty if truly unparseable
+                    return ''; 
+                }
+            } else {
+                // If the date was parsed successfully, check if it might be a BE year that needs conversion
+                // This handles cases where the sheet might return a date like "2568-05-30" which JS Date might interpret as 2568 AD
+                if (date.getFullYear() > 2500 && date.getFullYear() - 543 >= 1900) { // Check if it looks like a BE year
+                    date.setFullYear(date.getFullYear() - 543);
+                }
+            }
+
+            if (isNaN(date.getTime())) return ''; // Final check for invalid date
+
+            const yearAD = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${yearAD}-${month}-${day}`;
+        }
+
+        /**
+         * Helper function to convert Gregorian date string (YYYY-MM-DD) to Buddhist Era date string (YYYY-MM-DD).
+         * This is used when sending data from the form to Google Apps Script.
+         * @param {string} adDateString - The date string in Beale-MM-DD (Gregorian year) format.
+         * @returns {string} Formatted date string (YYYY-MM-DD Buddhist Era) or empty string if invalid.
+         */
+        function convertADToBuddhistEraDateString(adDateString) {
+            if (!adDateString) return '';
+            const parts = adDateString.split('-');
+            if (parts.length !== 3) return '';
+
+            const yearAD = parseInt(parts[0], 10);
+            const month = parts[1];
+            const day = parts[2];
+
+            if (isNaN(yearAD)) return '';
+
+            const yearBE = yearAD + 543;
+            return `${yearBE}-${month}-${day}`;
+        }
+
+
+        // --- Form Submission ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // IMPORTANT: Ensure GAS_URL is correctly set from your Google Apps Script Web App.
+            // If you see this message in the console, you have not changed the URL or the changed URL is incorrect.
+            if (GAS_URL === "YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE" || !GAS_URL.startsWith("https://script.google.com/macros/s/")) {
+                showModal("กรุณาอัปเดต 'GAS_URL' ในโค้ด HTML ด้วย URL ของ Google Apps Script Web App ที่คุณ Deploy", false);
+                console.error("Error: GAS_URL is not correctly set. Please update it in the HTML code.");
+                return;
+            }
+
+            // Required fields validation - 'จังหวัด', 'อำเภอ', 'ตำบล' are now optional
+            const requiredFields = ['ชื่อผู้ใช้', 'รหัสผ่าน', 'ชื่อหน่วยงาน', 'วันหมดอายุ'];
+            for (const fieldId of requiredFields) {
+                const inputElement = document.getElementById(fieldId);
+                if (!inputElement || !inputElement.value.trim()) {
+                    showModal(`กรุณากรอกข้อมูลในช่อง "${document.querySelector(`label[for='${fieldId}']`)?.textContent || fieldId}" ให้ครบถ้วน`, false);
+                    inputElement.focus();
+                    return;
+                }
+            }
+
+            submitButtonText.textContent = 'กำลังบันทึก...';
+            loadingSpinner.classList.remove('hidden');
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+
+            const formData = new FormData(form);
+            updateStatus(); // Update status before submission
+
+            // Convert Gregorian year from input to Buddhist Era year for submission
+            // The value from input type="date" is always Beale-MM-DD (Gregorian)
+            const registrationDateBE = convertADToBuddhistEraDateString(registrationDateInput.value); // This will convert AD to BE for submission
+            const expiryDateBE = convertADToBuddhistEraDateString(expiryDateInput.value); // This will convert AD to BE for submission
+
+            formData.set('วันที่บันทึก', registrationDateBE);
+            formData.set('วันหมดอายุ', expiryDateBE);
+            // formData.set('สถานะ', statusInput.value); // No longer needed as status is set by formula in Google Sheet
+
+            try {
+                console.log("Attempting to fetch data from GAS_URL:", GAS_URL);
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showModal(result.message || "ดำเนินการเรียบร้อยแล้ว", true);
+                    clearForm(true);
+                } else {
+                    showModal("เกิดข้อผิดพลาด: " + (result.message || "ไม่สามารถบันทึกข้อมูลได้"), false);
+                }
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                showModal("เกิดข้อผิดพลาดในการเชื่อมต่อ: " + error.message, false);
+            } finally {
+                submitButtonText.textContent = 'บันทึกข้อมูล';
+                loadingSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+            }
+        });
+
+        // --- Search Organization ---
+        searchOrgButton.addEventListener('click', async () => {
+            // IMPORTANT: Ensure GAS_URL is correctly set from your Google Apps Script Web App.
+            // If you see this message in the console, you have not changed the URL or the changed URL is incorrect.
+            if (GAS_URL === "YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE" || !GAS_URL.startsWith("https://script.google.com/macros/s/")) {
+                showModal("กรุณาอัปเดต 'GAS_URL' ในโค้ด HTML ด้วย URL ของ Google Apps Script Web App ที่คุณ Deploy", false);
+                console.error("Error: GAS_URL is not correctly set. Please update it in the HTML code.");
+                return;
+            }
+
+            const orgName = searchOrgNameInput.value.trim();
+            if (!orgName) {
+                showModal("กรุณาป้อนชื่อหน่วยงานที่ต้องการค้นหา", false);
+                searchOrgNameInput.focus();
+                return;
+            }
+            
+            searchOrgButton.textContent = 'กำลังค้นหา...';
+            searchOrgButton.disabled = true;
+            searchResultsContainer.classList.add('hidden'); // Hide previous results
+
+            try {
+                console.log("Attempting to fetch search data from GAS_URL:", `${GAS_URL}?action=fetchOrgDataByName&orgName=${encodeURIComponent(orgName)}`);
+                const response = await fetch(`${GAS_URL}?action=fetchOrgDataByName&orgName=${encodeURIComponent(orgName)}`);
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.length > 0) {
+                    displaySearchResults(result.data); // Display multiple results
+                } else {
+                    showModal(result.message || "ไม่พบข้อมูลหน่วยงาน หรือเกิดข้อผิดพลาด", false);
+                    clearForm(false); // Clear form but keep search field content
+                }
+            } catch (error) {
+                console.error("Error searching organization:", error);
+                showModal("เกิดข้อผิดพลาดในการค้นหา: " + error.message, false);
+            } finally {
+                searchOrgButton.textContent = 'ค้นหาหน่วยงาน';
+                searchOrgButton.disabled = false;
+            }
+        });
+
+        /**
+         * Displays search results in a dropdown-like container.
+         * @param {Object[]} results - An array of organization data objects.
+         */
+        function displaySearchResults(results) {
+            searchResultsContainer.innerHTML = ''; 
+            if (results.length === 0) {
+                searchResultsContainer.classList.add('hidden');
+                return;
+            }
+
+            results.forEach(data => {
+                const resultItem = document.createElement('div');
+                resultItem.textContent = data.ชื่อหน่วยงาน;
+                resultItem.className = 'p-2 cursor-pointer hover:bg-pink-100 rounded-md';
+                resultItem.onclick = () => {
+                    populateFormWithData(data); // Populate form with selected data
+                    searchResultsContainer.classList.add('hidden'); 
+                };
+                searchResultsContainer.appendChild(resultItem);
+            });
+            searchResultsContainer.classList.remove('hidden'); 
+        }
+
+
+        /**
+         * Populates the form fields with data retrieved from the server.
+         * Converts Buddhist Era years to Gregorian for display in date inputs.
+         * @param {Object} data - The data object containing user/organization details.
+         */
+        function populateFormWithData(data) {
+            document.getElementById('ชื่อผู้ใช้').value = data.ชื่อผู้ใช้ || '';
+            document.getElementById('รหัสผ่าน').value = data.รหัสผ่าน || '';
+            document.getElementById('ชื่อหน่วยงาน').value = data.ชื่อหน่วยงาน || '';
+            
+            inputChangwat.value = ''; hiddenChangwat.value = '';
+            inputAmphoe.value = ''; hiddenAmphoe.value = ''; inputAmphoe.disabled = true;
+            inputTambon.value = ''; hiddenTambon.value = ''; inputTambon.disabled = true;
+            optionsChangwat.innerHTML = ''; optionsAmphoe.innerHTML = ''; optionsTambon.innerHTML = '';
+            currentAmphoes = []; currentTambons = [];
+            
+            if (data.จังหวัด) {
+                inputChangwat.value = data.จังหวัด;
+                selectChangwat(data.จังหวัด);
+                if (data.อำเภอ) {
+                    inputAmphoe.value = data.อำเภอ; 
+                    selectAmphoe(data.อำเภอ);
+                    if (data.ตำบล) {
+                        inputTambon.value = data.ตำบล;
+                        hiddenTambon.value = data.ตำบล;
+                    }
+                }
+            }
+
+            document.getElementById('เบอร์โทร').value = data.เบอร์โทร || '';
+            
+            // Populate registration date and update its BE display
+            const regDateFormatted = formatDateForInput(data.วันที่บันทึก);
+            document.getElementById('วันที่บันทึก').value = regDateFormatted;
+            if (regDateFormatted) {
+                const date = new Date(regDateFormatted);
+                if (!isNaN(date.getTime())) {
+                    displayRegistrationYearBE.textContent = `(พ.ศ. ${date.getFullYear() + 543})`;
+                } else {
+                    displayRegistrationYearBE.textContent = '';
+                }
+            } else {
+                displayRegistrationYearBE.textContent = '';
+            }
+
+            // Populate expiry date and update its BE display (handled by updateStatus)
+            document.getElementById('วันหมดอายุ').value = formatDateForInput(data.วันหมดอายุ);
+            
+            // The 'สถานะ' field will display the value from the sheet, which is the result of the formula.
+            // It will not be set by updateStatus directly here, but updateStatus is still useful for client-side feedback
+            // when the user changes the expiry date manually on the form before submission.
+            document.getElementById('สถานะ').value = data.สถานะ || ''; 
+            
+            hiddenRowIdInput.value = data.__rowIndex || '';
+
+            updateStatus(); // This will also update the BE year displays for expiry date
+        }
+        
+        // --- Clear Form ---
+        document.getElementById('clearFormButton').addEventListener('click', () => clearForm(true));
+
+        function clearForm(clearSearchField = true) {
+            form.reset();
+            hiddenRowIdInput.value = '';
+            if (clearSearchField) {
+                searchOrgNameInput.value = '';
+            }
+            
+            inputChangwat.value = ''; hiddenChangwat.value = '';
+            inputAmphoe.value = ''; hiddenAmphoe.value = ''; inputAmphoe.disabled = true;
+            inputTambon.value = ''; hiddenTambon.value = ''; inputTambon.disabled = true;
+            optionsChangwat.innerHTML = ''; optionsAmphoe.innerHTML = ''; optionsTambon.innerHTML = '';
+            currentAmphoes = []; currentTambons = [];
+            
+            filterDropdownOptions(inputChangwat, 'optionsChangwat', Object.keys(thaiAdminData));
+            toggleDropdown('optionsChangwat', false);
+
+            setRegistrationDate(); // Sets initial date and updates BE year display
+            updateStatus(); // Updates status and BE year for expiry
+            submitButtonText.textContent = 'บันทึกข้อมูล';
+            searchResultsContainer.classList.add('hidden'); // Hide search results when clearing form
+        }
+
+
+        // --- Initial Setup ---
+        window.onload = () => {
+            setRegistrationDate();
+            updateStatus();
+            
+            // Add event listener for input change on registration date to update BE year display
+            registrationDateInput.addEventListener('change', () => {
+                const date = new Date(registrationDateInput.value);
+                if (!isNaN(date.getTime())) {
+                    displayRegistrationYearBE.textContent = `(พ.ศ. ${date.getFullYear() + 543})`;
+                } else {
+                    displayRegistrationYearBE.textContent = '';
+                }
+            });
+
+            expiryDateInput.addEventListener('change', updateStatus); // updateStatus also updates BE year for expiry
+            
+            // Attach event listeners for dropdowns programmatically
+            inputChangwat.addEventListener('keyup', (event) => filterDropdownOptions(inputChangwat, 'optionsChangwat', Object.keys(thaiAdminData)));
+            inputChangwat.addEventListener('focus', () => toggleDropdown('optionsChangwat', true));
+
+            inputAmphoe.addEventListener('keyup', (event) => filterDropdownOptions(inputAmphoe, 'optionsAmphoe', currentAmphoes));
+            inputAmphoe.addEventListener('focus', () => toggleDropdown('optionsAmphoe', true));
+
+            inputTambon.addEventListener('keyup', (event) => filterDropdownOptions(inputTambon, 'optionsTambon', currentTambons));
+            inputTambon.addEventListener('focus', () => toggleDropdown('optionsTambon', true));
+
+
+            // Populate initial Changwat dropdown options but keep them hidden
+            populateDropdown(optionsChangwat, Object.keys(thaiAdminData), hiddenChangwat, inputChangwat, selectChangwat);
+            toggleDropdown('optionsChangwat', false);
+
+            // Hide all dropdowns on outside click
+            document.addEventListener('click', function(event) {
+                const dropdowns = ['optionsChangwat', 'optionsAmphoe', 'optionsTambon'];
+                const inputs = ['inputChangwat', 'inputAmphoe', 'inputTambon'];
+                
+                let clickedInsideDropdownOrInput = false;
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const dropdownElement = document.getElementById(dropdowns[i]);
+                    const inputElement = document.getElementById(inputs[i]);
+                    if ((dropdownElement && dropdownElement.contains(event.target)) || (inputElement && inputElement.contains(event.target))) {
+                        clickedInsideDropdownOrInput = true;
+                        break;
+                    }
+                }
+
+                if (!clickedInsideDropdownOrInput) {
+                    dropdowns.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.classList.add('hidden');
+                            el.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+            });
+
+            // Attach event listeners for modal buttons
+            if (modalCloseButton) {
+                modalCloseButton.addEventListener('click', closeModal);
+            }
+            if (modalOkButton) {
+                modalOkButton.addEventListener('click', closeModal);
+            }
+
+            // Add event listener to hide search results when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!searchOrgNameInput.contains(event.target) && !searchResultsContainer.contains(event.target) && !searchOrgButton.contains(event.target)) {
+                    searchResultsContainer.classList.add('hidden');
+                }
+            });
+
+            // Optional: Hide search results when typing in the search box
+            searchOrgNameInput.addEventListener('input', () => {
+                if (searchOrgNameInput.value.trim() === '') {
+                    searchResultsContainer.classList.add('hidden');
+                }
+            });
+
+            // Allow Enter key to trigger search button
+            searchOrgNameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent default form submission if any
+                    searchOrgButton.click();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
