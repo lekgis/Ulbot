@@ -2,7 +2,7 @@ const CACHE_NAME = 'Ulbot-app-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/icons/lb.ico'
+  '/static/icons/lu.ico'
 ];
 
 // ติดตั้งครั้งแรก - แคชไฟล์
@@ -21,3 +21,4 @@ self.addEventListener('fetch', event => {
   );
 
 });
+
